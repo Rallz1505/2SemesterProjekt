@@ -1,5 +1,6 @@
 package GUI;
 
+import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -9,13 +10,23 @@ import javafx.scene.Scene;
 
 import java.awt.*;
 
-public class ForsidePane extends GridPane {
+public class ForsidePane extends Application {
 
-    public ForsidePane(){
-        this.setHgap(20);
-        this.setVgap(20);
-        this.setPadding(new Insets(20));
-        this.setAlignment(Pos.CENTER);
+    @Override
+    public void start(Stage stage) throws Exception {
+        GridPane gridPane = new GridPane();
+        Scene scene = new Scene(gridPane, 400, 200);
+        initContent(gridPane);
+        stage.setScene(scene);
+        stage.setTitle("Produktion & Fadlager");
+        stage.show();
+    }
+
+    public void initContent(GridPane pane){
+        pane.setHgap(20);
+        pane.setVgap(20);
+        pane.setPadding(new Insets(20));
+        pane.setAlignment(Pos.CENTER);
 
         Button btnAdmin = new Button("Admin");
         btnAdmin.setPrefWidth(150);
@@ -23,8 +34,8 @@ public class ForsidePane extends GridPane {
         Button btnDest = new Button("Destillatør");
         btnDest.setPrefWidth(150);
 
-        this.add(btnAdmin, 0, 0);
-        this.add(btnDest, 1, 0);
+        pane.add(btnAdmin, 0, 0);
+        pane.add(btnDest, 1, 0);
 
         btnAdmin.setOnAction(e -> openAdminWindow());
         btnDest.setOnAction(e -> openDestWindow());
