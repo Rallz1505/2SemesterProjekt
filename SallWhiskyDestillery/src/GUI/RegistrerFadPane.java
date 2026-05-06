@@ -1,8 +1,10 @@
 package GUI;
 
 import Controller.Controller;
+import Model.Leverandør;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
@@ -10,7 +12,10 @@ import javafx.stage.Stage;
 
 public class RegistrerFadPane extends GridPane {
 
-    private TextField txfId, txfStorrelse, txfLeverandor, txfTidligereIndhold, txfNuvMaengde;
+    private TextField txfId, txfStorrelse, txfTidligereIndhold, txfNuvMaengde;
+
+    private ComboBox<Leverandør> cbhLeverandør;
+    private Stage stage;
 
     public RegistrerFadPane(){
         initStorage();
@@ -34,8 +39,10 @@ public class RegistrerFadPane extends GridPane {
 
         Label lblLeverandor = new Label("Leverandør:");
         this.add(lblLeverandor,0,2);
-        txfLeverandor = new TextField();
-        this.add(txfLeverandor,1,2);
+        cbhLeverandør = new ComboBox<>();
+        this.add(cbhLeverandør,1,2);
+
+        cbhLeverandør.getItems().addAll(Controller.getLeverandører());
 
         Label lblTidligereIndhold = new Label("Tidligere indhold:");
         this.add(lblTidligereIndhold,0,3);
@@ -66,11 +73,11 @@ public class RegistrerFadPane extends GridPane {
     public void gemFad(){
         int id = Integer.parseInt(txfId.getText().trim());
         int storrelse = Integer.parseInt(txfStorrelse.getText().trim());
-        String leverandor = txfLeverandor.getText().trim();
+        Leverandør leverandor = cbhLeverandør.getValue();
         String tidligereIndhold = txfTidligereIndhold.getText().trim();
         int nuvMaengde = Integer.parseInt(txfNuvMaengde.getText().trim());
 
-        Controller.createFad(storrelse,id,leverandor,tidligereIndhold,nuvMaengde);
+        Controller.createFad(storrelse,id,leverandor,tidligereIndhold,nuvMaengde, null);
 
         Stage stage = (Stage) this.getScene().getWindow();
         stage.close();
