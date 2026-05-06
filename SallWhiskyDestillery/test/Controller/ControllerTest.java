@@ -1,66 +1,55 @@
-package Controller;
+package Model;
 
-import Controller.Controller;
-import Controller.Storage;
-import Model.Destillering;
-import Model.Fad;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import storage.StorageList;
-
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ControllerTest {
+class ModelTest {
 
-    @BeforeEach
-    void setUp() {
-        Controller.setStorage(new StorageList());
+    @Test
+    void fadTilføjMængdeOgLedigKapacitet() {
+        Fad fad = new Fad(100.0, 1, null, "Bourbon", 40.0, null);
+
+        fad.tilføjMængde(30.0);
+
+        assertEquals(70.0, fad.getNuværendeMængde());
+        assertEquals(30.0, fad.ledigKapacitet());
+        assertFalse(fad.erFuldt());
+        assertFalse(fad.erTomt());
     }
 
     @Test
-    void createFad() {
-        Fad fad = Controller.createFad(
-                100.0,
-                1,
-                "Sals",
-                "Bourbon",
-                50.0
-        );
+    void lagerFinderLedigeOgOptagedePladser() {
+        Lager lager = new Lager(1, "Container", "Sall", "Bag destilleriet");
 
-        assertNotNull(fad);
-        assertEquals(100.0, fad.getStørrelse());
-        assertEquals(1, fad.getId());
-        assertEquals("Sals", fad.getLeverandør());
-        assertEquals("Bourbon", fad.getTidligereIndhold());
-        assertEquals(50.0, fad.getNuværendeMængde());
+        LagerPlads plads1 = lager.createLagerPlads(1, 1, 1, "");
+        LagerPlads plads2 = lager.createLagerPlads(1, 1, 2, "");
+
+        Fad fad = new Fad(100.0, 1, null, "Sherry", 50.0, null);
+        plads1.placerFad(fad);
+
+        assertEquals(1, lager.getLedigePladser().size());
+        assertEquals(1, lager.getOptagedePladser().size());
+        assertTrue(lager.getLedigePladser().contains(plads2));
+        assertTrue(lager.getOptagedePladser().contains(plads1));
     }
 
     @Test
-    void createDestillering() {
-        LocalDate startDato = LocalDate.of(2024, 1, 1);
-        LocalDate slutDato = LocalDate.of(2024, 1, 10);
-
-        Destillering destillering = Controller.createDestillering(
-                startDato,
-                slutDato,
-                1,
-                "Byg",
-                200.0,
-                60.0,
-                "Tørv",
-                "Test kommentar"
+    void leverandørTilføjerOgFjernerFad() {
+        Leverandør leverandør = new Leverandør(
+                1, "Cask Supplier", "Spanien", "Pedro", "12345678", "test@test.dk", "Test"
         );
 
-        assertNotNull(destillering);
-        assertEquals(startDato, destillering.getStartDato());
-        assertEquals(slutDato, destillering.getSlutDato());
-        assertEquals(1, destillering.getMaltBatch());
-        assertEquals("Byg", destillering.getKornSort());
-        assertEquals(200.0, destillering.getMængde());
-        assertEquals(60.0, destillering.getAlkoholProcent());
-        assertEquals("Tørv", destillering.getRygeMateriale());
-        assertEquals("Test kommentar", destillering.getKommentar());
+        Fad fad = new Fad(200.0, 1, null, "Sherry", 0.0, null);
+
+        leverandør.addFad(fad);
+
+        assertEquals(1, leverandør.antalFade());
+        assertEquals(leverandør, fad.getLeverandør());
+
+        leverandør.removeFad(fad);
+
+        assertEquals(0, leverandør.antalFade());
+        assertNull(fad.getLeverandør());
     }
 }

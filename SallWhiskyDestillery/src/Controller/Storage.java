@@ -1,23 +1,44 @@
 package Controller;
 
-import Model.Destillering;
-import Model.Fad;
+import Model.*;
 
 import java.util.List;
 
 public interface Storage {
 
-    public List<Destillering> getDestilleringer();
+    // -------------------------------------------------------------------------
+    // Destillering
 
-    public void addDestillering(Destillering destillering);
+    List<Destillering> getDestilleringer();
 
-    public void removeDestillering(Destillering destillering);
+    void addDestillering(Destillering destillering);
 
+    void removeDestillering(Destillering destillering);
 
-    public List<Fad> getFade();
+    // -------------------------------------------------------------------------
+    // Fad
 
-    public void addFad(Fad fad);
+    List<Fad> getFade();
 
-    public void removeFad(Fad fad);
+    void addFad(Fad fad);
 
+    void removeFad(Fad fad);
+
+    // -------------------------------------------------------------------------
+    // Lager
+
+    List<Lager> getLagre();
+
+    void addLager(Lager lager);
+
+    void removeLager(Lager lager);
+
+    // -------------------------------------------------------------------------
+    // Leverandør
+
+    List<Leverandør> getLeverandører();
+
+    void addLeverandør(Leverandør leverandør);
+
+    void removeLeverandør(Leverandør leverandør);
 }

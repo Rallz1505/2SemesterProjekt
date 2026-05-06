@@ -27,6 +27,7 @@ public class Destillering {
 
     }
 
+
     public int getMaltBatch() {
         return maltBatch;
     }
