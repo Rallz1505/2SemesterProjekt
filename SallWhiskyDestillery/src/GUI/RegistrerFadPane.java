@@ -3,6 +3,7 @@ package GUI;
 import Controller.Controller;
 import Model.Leverandør;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -17,11 +18,21 @@ public class RegistrerFadPane extends GridPane {
     private ComboBox<Leverandør> cbhLeverandør;
     private Stage stage;
 
-    public RegistrerFadPane(){
-        initStorage();
+
+    public void open() {
+        stage = new Stage();
+        stage.setTitle("Registrer Fad");
+
+        initContent();
+
+        Scene scene = new Scene(this, 440, 430);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
     }
 
-    public void initStorage(){
+
+    public void initContent(){
         this.setPadding(new Insets(20));
         this.setHgap(10);
         this.setVgap(10);
@@ -55,9 +66,6 @@ public class RegistrerFadPane extends GridPane {
         this.add(txfNuvMaengde,1,4);
 
 
-        Button btnCancel = new Button("Annuller");
-        this.add(btnCancel, 0, 5);
-        btnCancel.setOnAction(e -> lukVindue());
 
         Button btnSave = new Button("Gem fad");
         this.add(btnSave, 1, 5);
@@ -65,10 +73,6 @@ public class RegistrerFadPane extends GridPane {
 
     }
 
-    public void lukVindue(){
-        Stage stage = new Stage();
-        stage.close();
-    }
 
     public void gemFad(){
         int id = Integer.parseInt(txfId.getText().trim());
@@ -79,12 +83,8 @@ public class RegistrerFadPane extends GridPane {
 
         Controller.createFad(storrelse,id,leverandor,tidligereIndhold,nuvMaengde, null);
 
-        Stage stage = (Stage) this.getScene().getWindow();
-        stage.close();
     }
 
-    public void anullerAction(){
 
-    }
 
 }
