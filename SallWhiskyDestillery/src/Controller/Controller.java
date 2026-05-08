@@ -93,10 +93,69 @@ public abstract class Controller {
         }
     }
 
-
-
-
     public static void setStorage(Storage storage) {
         Controller.storage = storage;
     }
+
+    public static Påfyldning createPåfyldning(LocalDate dato, String ansvarlig, VæskeMængde væskeMængde, Fad fad){
+
+        if (!kanFordele(væskeMængde.getDestilat(), væskeMængde.getMængde())) {
+            throw new IllegalArgumentException("Destilleringen har ikke nok resterende mængde.");
+        }
+
+        if (fad.ledigKapacitet() < væskeMængde.getMængde()) {
+            throw new IllegalArgumentException("Fad har ikke nok plads");
+        }
+
+            Påfyldning påfyldning = new Påfyldning(dato, ansvarlig, væskeMængde, fad);
+            fad.addPåfyldning(påfyldning);
+            fad.tilføjMængde(væskeMængde.getMængde());
+            storage.addPåfyldning(påfyldning);
+            return påfyldning;
+
+
+    }
+
+
+
+    public static double getFordeltMængde(Destillering destillering) {
+
+        double fordeltMængde = 0;
+
+        for (Påfyldning påfyldning : storage.getPåfyldninger()) {
+
+            if (påfyldning.getVæskeMængde().getDestilat() == destillering) {
+
+                fordeltMængde += påfyldning.getVæskeMængde().getMængde();
+
+            }
+        }
+
+        return fordeltMængde;
+    }
+
+    public static double getResterendeMængde(Destillering destillering){
+
+        double resterendeMængde = 0;
+
+
+            resterendeMængde = destillering.getMængde() - getFordeltMængde(destillering);
+
+
+
+        return resterendeMængde;
+    }
+
+    public static boolean kanFordele(Destillering destillering, Double mængde){
+
+        boolean kanFordeles = false;
+
+        if (getResterendeMængde(destillering) >= mængde){
+            kanFordeles = true;
+        }
+
+        return kanFordeles;
+    }
+
+
 }

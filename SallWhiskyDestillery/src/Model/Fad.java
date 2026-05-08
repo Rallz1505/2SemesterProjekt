@@ -1,6 +1,8 @@
 package Model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Fad {
 
@@ -10,6 +12,7 @@ public class Fad {
     private String tidligereIndhold;
     private double nuværendeMængde;
     private LagerPlads lagerPlads;
+    private final ArrayList<Påfyldning> påfyldninger = new ArrayList<>();
 
     public Fad(double størrelse, int id, Leverandør leverandør, String tidligereIndhold, double nuværendeMængde, LagerPlads lagerPlads) {
         this.størrelse = størrelse;
@@ -33,11 +36,32 @@ public class Fad {
         }
     }
 
+    public void addPåfyldning(Påfyldning påfyldning){
+        if(!påfyldninger.contains(påfyldning)){
+            påfyldninger.add(påfyldning);
+            påfyldning.setFad(this);
+        }
+    }
+
+    public void removePåfyldning(Påfyldning påfyldning){
+        if(!påfyldninger.contains(påfyldning)){
+            påfyldninger.remove(påfyldning);
+            påfyldning.setFad(null);
+        }
+    }
 
     public void tilføjMængde(double liter) {
         if (nuværendeMængde + liter <= størrelse) {
             nuværendeMængde += liter;
         }
+    }
+
+    public LagerPlads getLagerPlads() {
+        return lagerPlads;
+    }
+
+    public ArrayList<Påfyldning> getPåfyldninger() {
+        return påfyldninger;
     }
 
     public void fjernMængde(double liter) {
@@ -92,5 +116,52 @@ public class Fad {
 
     public void setNuværendeMængde(double nuværendeMængde) {
         this.nuværendeMængde = nuværendeMængde;
+    }
+
+    public int getAlder() {
+
+        if (påfyldninger.isEmpty()) {
+            return 0;
+        }
+
+        LocalDate ældsteDato = påfyldninger.get(0).getDato();
+
+        for (Påfyldning påfyldning : påfyldninger) {
+
+            if (påfyldning.getDato().isBefore(ældsteDato)) {
+                ældsteDato = påfyldning.getDato();
+            }
+        }
+
+        return ældsteDato.until(LocalDate.now()).getYears();
+    }
+
+    public String getKornsorter() {
+
+        ArrayList<String> kornsorter = new ArrayList<>();
+
+        for (Påfyldning påfyldning : påfyldninger) {
+
+            String kornsort = påfyldning.getVæskeMængde().getDestilat().getKornSort();
+
+            if (!kornsorter.contains(kornsort)) {
+                kornsorter.add(kornsort);
+            }
+        }
+
+        return String.join(", ", kornsorter);
+    }
+
+    @Override
+    public String toString() {
+
+        String kornsort = "Ukendt";
+        int alder = getAlder();
+
+        if (!påfyldninger.isEmpty()) {
+            kornsort = getKornsorter();
+        }
+
+        return "Fad id " + id + " | Tidligere indhold: " + tidligereIndhold + " | Kornsort: " + kornsort + " | Alder: " + alder + " år";
     }
 }

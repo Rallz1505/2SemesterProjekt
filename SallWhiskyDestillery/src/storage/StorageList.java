@@ -13,6 +13,7 @@ public class StorageList implements Storage, Serializable {
     private List<Fad> fade = new ArrayList<>();
     private List<Lager> lagre = new ArrayList<>();
     private List<Leverandør> leverandører = new ArrayList<>();
+    private List<Påfyldning> påfyldninger = new ArrayList<>();
 
     // -------------------------------------------------------------------------
 
@@ -69,6 +70,17 @@ public class StorageList implements Storage, Serializable {
     public void removeLeverandør(Leverandør leverandør) {
         leverandører.remove(leverandør);
     }
+
+    // -------------------------------------------------------------------------
+    public List<Påfyldning> getPåfyldninger() {
+        return new ArrayList<>(påfyldninger);
+    }
+
+    public void addPåfyldning(Påfyldning påfyldning) {
+        påfyldninger.add(påfyldning);
+    }
+
+    public void removePåfyldning(Påfyldning påfyldning) { påfyldninger.remove(påfyldning); }
 
     // -------------------------------------------------------------------------
 

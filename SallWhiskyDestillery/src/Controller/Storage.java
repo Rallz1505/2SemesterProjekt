@@ -41,4 +41,13 @@ public interface Storage {
     void addLeverandør(Leverandør leverandør);
 
     void removeLeverandør(Leverandør leverandør);
+
+    // -------------------------------------------------------------------------
+    // Leverandør
+
+    List<Påfyldning> getPåfyldninger();
+
+    void addPåfyldning(Påfyldning påfyldning);
+
+    void removePåfyldning(Påfyldning påfyldning);
 }

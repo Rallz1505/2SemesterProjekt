@@ -1,0 +1,64 @@
+package Model;
+
+import java.time.LocalDate;
+
+public class Påfyldning {
+
+    private LocalDate dato;
+    private String ansvarlig;
+    private VæskeMængde væskeMængde;
+    private Fad fad;
+
+    public Påfyldning(LocalDate dato, String ansvarlig, VæskeMængde væskeMængde, Fad fad) {
+        this.dato = dato;
+        this.ansvarlig = ansvarlig;
+        this.væskeMængde = væskeMængde;
+        this.fad = fad;
+    }
+
+    public void setFad(Fad fad){
+        if(this.fad != fad){
+            Fad oldFad = this.fad;
+            if(oldFad != null){
+                oldFad.removePåfyldning(this);
+            }
+            this.fad = fad;
+            if(fad != null){
+                fad.addPåfyldning(this);
+            }
+        }
+    }
+
+    public VæskeMængde createVaeskeMaengde(double maengde, Destillering destillering) {
+        this.væskeMængde = new VæskeMængde(maengde, destillering);
+        return this.væskeMængde;
+    }
+
+    public LocalDate getDato() {
+        return dato;
+    }
+
+    public void setDato(LocalDate dato) {
+        this.dato = dato;
+    }
+
+    public String getAnsvarlig() {
+        return ansvarlig;
+    }
+
+    public void setAnsvarlig(String ansvarlig) {
+        this.ansvarlig = ansvarlig;
+    }
+
+    public VæskeMængde getVæskeMængde() {
+        return væskeMængde;
+    }
+
+    public void setVæskeMængde(VæskeMængde væskeMængde) {
+        this.væskeMængde = væskeMængde;
+    }
+
+    public Fad getFad() {
+        return fad;
+    }
+}
