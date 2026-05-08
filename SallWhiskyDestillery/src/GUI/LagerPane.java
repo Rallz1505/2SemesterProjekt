@@ -2,6 +2,7 @@ package GUI;
 
 import Controller.Controller;
 import Model.Lager;
+import Model.LagerPlads;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -10,12 +11,17 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class LagerPane extends GridPane {
+
+    private Lager ingenValgt;
+
     private TextField txfLagerNavn, txfAdresse, txfKapacitet;
     private TextArea txaLagerBeskrivelse;
 
     private ComboBox<Lager> cbLager;
     private TextField txfReol, txfHylde, txfPlads;
     private TextArea txaPladsBeskrivelse;
+
+    private ListView<LagerPlads> lvwPladser;
 
     public void open() {
         Stage stage = new Stage();
@@ -45,8 +51,11 @@ public class LagerPane extends GridPane {
 
         ColumnConstraints col3 = new ColumnConstraints();
         col3.setPrefWidth(180);
+        ColumnConstraints col4 = new ColumnConstraints();
+        col4.setPrefWidth(250);
 
-        this.getColumnConstraints().addAll(col0, col1, col2, col3);
+
+        this.getColumnConstraints().addAll(col0, col1, col2, col3, col4);
 
         //Lagerside
 
@@ -81,10 +90,7 @@ public class LagerPane extends GridPane {
         Label lblVælgLager = new Label("Vælg Lager:");
         this.add(lblVælgLager, 2, 1);
 
-        cbLager = new ComboBox<>();
-        cbLager.getItems().addAll(Controller.getLagre());
-        cbLager.setPrefWidth(200);
-        this.add(cbLager, 3, 1);
+
 
         // Lagerplads side
 
@@ -112,8 +118,41 @@ public class LagerPane extends GridPane {
         Button btnOpretLagerplads = new Button("Opret lagerplads");
         this.add(btnOpretLagerplads, 3,6);
         btnOpretLagerplads.setOnAction(e-> gemLagerPlads());
-    }
 
+        Label lblLagerpladser = new Label("Lagerpladser");
+        lblLagerpladser.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+        this.add(lblLagerpladser, 4,0);
+        lvwPladser = new ListView<>();
+        lvwPladser.setPrefWidth(250);
+        lvwPladser.setPrefHeight(200);
+        this.add(lvwPladser, 4, 1, 1, 6);
+
+
+
+        // Comboboks
+
+        cbLager = new ComboBox<>();
+        ingenValgt = new Lager(0, "Ikke noget valgt", "", "");
+        cbLager.getItems().add(ingenValgt);
+        cbLager.getItems().addAll(Controller.getLagre());
+        cbLager.getSelectionModel().select(ingenValgt);
+        cbLager.setDisable(true);
+        cbLager.setPrefWidth(200);
+        this.add(cbLager, 3, 1);
+        disableLagerpladsFields(true);
+
+        cbLager.setOnAction(e->{
+            Lager valgt = cbLager.getValue();
+            if (valgt == null || valgt.getId() == 0) {
+                disableLagerpladsFields(true);
+                lvwPladser.getItems().clear();
+                return;
+            }
+            disableLagerpladsFields(false);
+            lvwPladser.getItems().setAll(valgt.getLagerPladser());
+        });
+
+    }
 
 
     private void gemLager() {
@@ -122,21 +161,61 @@ public class LagerPane extends GridPane {
         int id = Integer.parseInt(txfKapacitet.getText().trim());
         String beskrivelse = txaLagerBeskrivelse.getText().trim();
 
-        Lager lager = Controller.createLager(id, navn, adresse, beskrivelse);
+        Controller.createLager(id, navn, adresse, beskrivelse);
 
         cbLager.getItems().clear();
+        cbLager.getItems().add(ingenValgt);
         cbLager.getItems().addAll(Controller.getLagre());
-        cbLager.getSelectionModel().select(lager);
+
+
+        cbLager.setDisable(Controller.getLagre().isEmpty());
+
+        cbLager.getSelectionModel().select(ingenValgt);
+
+        disableLagerpladsFields(true);
 
         txfLagerNavn.clear();
         txfAdresse.clear();
         txfKapacitet.clear();
         txaLagerBeskrivelse.clear();
-
-
     }
     private void gemLagerPlads(){
+        Lager lager = cbLager.getValue();
+        if (lager == null){
+            return;
+        }
+        if (txfReol.getText().trim().isEmpty() ||
+                txfHylde.getText().trim().isEmpty() ||
+                txfPlads.getText().trim().isEmpty()) {
+
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Manglende data");
+            alert.setHeaderText("Udfyld alle felter");
+            alert.setContentText("Reol, hylde og plads skal udfyldes.");
+            alert.showAndWait();
+            return;
+        }
+        int reolNr = Integer.parseInt(txfReol.getText().trim());
+        int hyldeNr = Integer.parseInt(txfHylde.getText().trim());
+        int pladsNr = Integer.parseInt(txfPlads.getText().trim());
+        String beskrivelse = txaPladsBeskrivelse.getText().trim();
+
+        lager.createLagerPlads(reolNr, hyldeNr,pladsNr,beskrivelse);
+
+        lvwPladser.getItems().setAll(lager.getLagerPladser());
+
+        txfReol.clear();
+        txfHylde.clear();
+        txfPlads.clear();
+        txaPladsBeskrivelse.clear();
 
     }
+    private void disableLagerpladsFields(boolean disable) {
+        txfReol.setDisable(disable);
+        txfHylde.setDisable(disable);
+        txfPlads.setDisable(disable);
+        txaPladsBeskrivelse.setDisable(disable);
+    }
+
 
 }
