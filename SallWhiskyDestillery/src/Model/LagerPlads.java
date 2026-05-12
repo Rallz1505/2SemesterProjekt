@@ -18,6 +18,7 @@ public class LagerPlads {
     public void placerFad(Fad fad){
         if (this.fad == null){
             this.fad = fad;
+            fad.setLagerPlads(this);
         }
     }
 

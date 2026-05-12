@@ -4,6 +4,7 @@ import Model.*;
 import storage.StorageList;
 import storage.StorageList;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Controller {
@@ -41,6 +42,33 @@ public abstract class Controller {
             }
         }
         return fundetFad;
+    }
+
+    private static boolean erKlarTilAftapning(Fad fad){
+        return fad.getAlder() >= 3;
+    }
+
+
+
+    public static List<Fad> getFadeKlarTilAftapning(){
+
+        var alleFade = getFade();
+        ArrayList<Fad> klarFade = new ArrayList<>();
+        if (alleFade.isEmpty()){
+            throw new IllegalArgumentException("Der findes ingen fad");
+        }
+        for (Fad f : alleFade){
+            if (erKlarTilAftapning(f)){
+                klarFade.add(f);
+            }
+        }
+
+        if (klarFade.isEmpty()){
+            throw new IllegalArgumentException("Der er ingen fad klar til aftapning");
+        }
+
+
+        return klarFade;
     }
 
     public static Lager createLager(int id, String navn, String adresse, String beskrivelse){

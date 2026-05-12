@@ -44,7 +44,7 @@ public class Fad {
     }
 
     public void removePåfyldning(Påfyldning påfyldning){
-        if(!påfyldninger.contains(påfyldning)){
+        if(påfyldninger.contains(påfyldning)){
             påfyldninger.remove(påfyldning);
             påfyldning.setFad(null);
         }
@@ -61,13 +61,17 @@ public class Fad {
     }
 
     public ArrayList<Påfyldning> getPåfyldninger() {
-        return påfyldninger;
+        return new ArrayList<>(påfyldninger);
     }
 
     public void fjernMængde(double liter) {
         if (nuværendeMængde - liter >= 0) {
             nuværendeMængde -= liter;
         }
+    }
+
+    public void setLagerPlads(LagerPlads lagerPlads) {
+        this.lagerPlads = lagerPlads;
     }
 
     public boolean erTomt() {
@@ -124,16 +128,16 @@ public class Fad {
             return 0;
         }
 
-        LocalDate ældsteDato = påfyldninger.get(0).getDato();
+        LocalDate yngsteDato = påfyldninger.get(0).getDato();
 
         for (Påfyldning påfyldning : påfyldninger) {
 
-            if (påfyldning.getDato().isBefore(ældsteDato)) {
-                ældsteDato = påfyldning.getDato();
+            if (påfyldning.getDato().isAfter(yngsteDato)) {
+                yngsteDato = påfyldning.getDato();
             }
         }
 
-        return ældsteDato.until(LocalDate.now()).getYears();
+        return yngsteDato.until(LocalDate.now()).getYears();
     }
 
     public String getKornsorter() {

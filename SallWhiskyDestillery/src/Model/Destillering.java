@@ -60,6 +60,9 @@ public class Destillering {
         return startDato;
     }
 
-
+    @Override
+    public String toString() {
+        return "Batch " + maltBatch + " | " + kornSort + " | " + mængde + " L";
+    }
 
 }

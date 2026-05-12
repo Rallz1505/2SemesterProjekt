@@ -103,6 +103,11 @@ public class Leverandør {
         this.kommentar = kommentar;
     }
 
+    @Override
+    public String toString() {
+        return navn + " (" + land + ")";
+    }
+
 
 
 }
