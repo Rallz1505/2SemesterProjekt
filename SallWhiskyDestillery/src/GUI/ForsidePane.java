@@ -44,6 +44,7 @@ public class ForsidePane extends Application {
 
         btnFadoversigt = new Button("Fadoversigt");
         pane.add(btnFadoversigt,0,2);
+        btnFadoversigt.setOnAction(e-> new FadoversigtPane().open());
 
         btnlager = new Button("Lager administration");
         pane.add(btnlager,0,3);
