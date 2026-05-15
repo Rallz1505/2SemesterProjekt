@@ -50,4 +50,13 @@ public interface Storage {
     void addPåfyldning(Påfyldning påfyldning);
 
     void removePåfyldning(Påfyldning påfyldning);
+
+    // -------------------------------------------------------------------------
+    // Leverandør
+
+    List<WhiskyProdukt> getWhiskyProdukter();
+
+    void addWhiskyProdukt(WhiskyProdukt whiskyProdukt);
+
+    void removeWhiskyProdukt(WhiskyProdukt whiskyProdukt);
 }

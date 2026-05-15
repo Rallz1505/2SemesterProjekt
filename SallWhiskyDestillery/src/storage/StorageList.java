@@ -14,6 +14,7 @@ public class StorageList implements Storage, Serializable {
     private List<Lager> lagre = new ArrayList<>();
     private List<Leverandør> leverandører = new ArrayList<>();
     private List<Påfyldning> påfyldninger = new ArrayList<>();
+    private List<WhiskyProdukt> whiskyProdukter = new ArrayList<>();
 
     // -------------------------------------------------------------------------
 
@@ -81,6 +82,17 @@ public class StorageList implements Storage, Serializable {
     }
 
     public void removePåfyldning(Påfyldning påfyldning) { påfyldninger.remove(påfyldning); }
+
+    // -------------------------------------------------------------------------
+    public List<WhiskyProdukt> getWhiskyProdukter() {
+        return new ArrayList<>(whiskyProdukter);
+    }
+
+    public void addWhiskyProdukt(WhiskyProdukt whiskyProdukt) {
+        whiskyProdukter.add(whiskyProdukt);
+    }
+
+    public void removeWhiskyProdukt(WhiskyProdukt whiskyProdukt) { whiskyProdukter.remove(whiskyProdukt); }
 
     // -------------------------------------------------------------------------
 

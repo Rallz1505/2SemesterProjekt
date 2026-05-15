@@ -145,6 +145,27 @@ public abstract class Controller {
     }
 
 
+    public static WhiskyProdukt createWhiskyProdukt(int id, String navn, String beskrivelse, double alkoholProcent, double vandMængde) {
+        WhiskyProdukt whiskyProdukt = new WhiskyProdukt(id, navn, beskrivelse, alkoholProcent, vandMængde);
+        storage.addWhiskyProdukt(whiskyProdukt);
+        return whiskyProdukt;
+    }
+
+    public static List<WhiskyProdukt> getWhiskyProdukter() {
+        return storage.getWhiskyProdukter();
+    }
+
+    public static WhiskyProdukt findWhiskyProdukt(int id) {
+
+        WhiskyProdukt fundetWhiskyProdukt = null;
+
+        for (WhiskyProdukt whiskyProdukt : storage.getWhiskyProdukter()) {
+            if (whiskyProdukt.getId() == id) {
+                fundetWhiskyProdukt = whiskyProdukt;
+            }
+        }
+        return fundetWhiskyProdukt;
+    }
 
     public static double getFordeltMængde(Destillering destillering) {
 

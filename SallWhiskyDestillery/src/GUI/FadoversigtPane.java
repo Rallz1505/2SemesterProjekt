@@ -234,8 +234,8 @@ public class FadoversigtPane extends GridPane {
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Fad beskrivelse");
-        alert.setHeaderText("Fad " + valgt.getId());
-        alert.setContentText(valgt.getTidligereIndhold());
+        alert.setHeaderText("Fad id : " + valgt.getId());
+        alert.setContentText(valgt.toString());
         alert.showAndWait();
 
     }
