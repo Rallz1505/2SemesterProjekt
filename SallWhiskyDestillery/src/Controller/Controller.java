@@ -155,7 +155,6 @@ public abstract class Controller {
             if (påfyldning.getVæskeMængde().getDestilat() == destillering) {
 
                 fordeltMængde += påfyldning.getVæskeMængde().getMængde();
-
             }
         }
 

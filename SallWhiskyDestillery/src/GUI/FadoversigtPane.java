@@ -32,7 +32,7 @@ public class FadoversigtPane extends GridPane {
 
         initContent();
 
-        Scene scene = new Scene(this, 900, 450);
+        Scene scene = new Scene(this, 900, 600);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
@@ -47,12 +47,12 @@ public class FadoversigtPane extends GridPane {
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         this.add(tabPane, 0, 0);
 
-        // --- Tab 1: Fadoversigt ---
+        // oversigt tab
         Tab tabOversigt = new Tab("Fadoversigt");
         tabOversigt.setContent(lavFadOversigtPane());
         tabPane.getTabs().add(tabOversigt);
 
-        // --- Tab 2: Registrer Påfyldning ---
+        // påfyldningstab
         Tab tabPåfyldning = new Tab("Registrer påfyldning");
         tabPåfyldning.setContent(lavPåfyldningPane());
         tabPane.getTabs().add(tabPåfyldning);
@@ -234,7 +234,7 @@ public class FadoversigtPane extends GridPane {
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Fad beskrivelse");
-        alert.setHeaderText("Fad " + valgt.getId());
+        alert.setHeaderText(valgt.toString());
         alert.setContentText(valgt.getTidligereIndhold());
         alert.showAndWait();
 
@@ -332,6 +332,7 @@ public class FadoversigtPane extends GridPane {
     }
 
     private void visKlarTilAftapning(){
+        lvwFade.getItems().setAll(Controller.getFadeKlarTilAftapning());
 
     }
 

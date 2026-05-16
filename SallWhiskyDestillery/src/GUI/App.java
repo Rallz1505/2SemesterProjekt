@@ -2,10 +2,7 @@ package GUI;
 
 import Controller.Controller;
 import Controller.Storage;
-import Model.Fad;
-import Model.Lager;
-import Model.LagerPlads;
-import Model.Leverandør;
+import Model.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -19,8 +16,8 @@ public class App  {
 
 
     public static void main(String[] args)  {
-        initStorage();
-        Storage storage = loadStorage();
+        Storage storage = null;
+//        Storage storage = loadStorage();
         if (storage == null) {
             storage = new StorageList();
             System.out.println("Empty ListStorage created");
@@ -29,65 +26,111 @@ public class App  {
 
         if (Controller.getFade().isEmpty()){
             System.out.println("Storage initialized");
+            initStorage();
         }
         Application.launch(ForsidePane.class);
-        saveStorage(storage);
+//        saveStorage(storage);
 
     }
 
     public static void initStorage() {
-        StorageList storage = new StorageList();
-        Controller.setStorage(storage);
 
-        Leverandør lev1 = Controller.createLeverandør(
-                1, "Bodega Casks", "Spanien", "Carlos",
-                "12345678", "carlos@bodega.dk", "Leverer sherryfade"
+        // Leverandører
+        Leverandør l1 = Controller.createLeverandør(
+                1, "Spanish Casks", "Spanien",
+                "Pedro", "11111111",
+                "spanish@casks.com", "Sherry fade"
         );
 
-        Leverandør lev2 = Controller.createLeverandør(
-                2, "Oak Barrel Europe", "Frankrig", "Jean",
-                "87654321", "jean@oak.dk", "Leverer egetræsfade"
+        Leverandør l2 = Controller.createLeverandør(
+                2, "Bourbon Barrels", "USA",
+                "John", "22222222",
+                "bourbon@barrels.com", "Bourbon fade"
         );
 
+        // Lagre
         Lager lager1 = Controller.createLager(
-                1, "Containerlager", "Bag destilleriet", "Primært lager"
+                1, "Container Lager", "Sall", "Bag destilleriet"
         );
 
-        LagerPlads plads1 = lager1.createLagerPlads(1, 1, 1, "");
-        LagerPlads plads2 = lager1.createLagerPlads(1, 1, 2, "");
-        LagerPlads plads3 = lager1.createLagerPlads(1, 2, 1, "Øverste hylde");
+        Lager lager2 = Controller.createLager(
+                2, "Lade Lager", "Hos bondemand", "Ekstra lager"
+        );
 
+        // Lagerpladser
+        LagerPlads lp1 = lager1.createLagerPlads(1,1,1,"Tæt ved døren");
+        LagerPlads lp2 = lager1.createLagerPlads(1,1,2,"");
+
+        LagerPlads lp3 = lager2.createLagerPlads(2,1,1,"Koldt område");
+        LagerPlads lp4 = lager2.createLagerPlads(2,1,2,"");
+
+        // Fade
         Fad fad1 = Controller.createFad(
-                100.0, 1, lev1, "Sherry", 50.0, plads1
+                100, 1, l1,
+                "Sherry", 0, lp1
         );
 
         Fad fad2 = Controller.createFad(
-                200.0, 2, lev2, "Bourbon", 0.0, plads2
+                200, 2, l2,
+                "Bourbon", 0, lp2
         );
 
-        plads1.placerFad(fad1);
-        plads2.placerFad(fad2);
+        Fad fad3 = Controller.createFad(
+                150, 3, l1,
+                "Portvin", 0, lp3
+        );
 
-        Controller.createDestillering(
-                LocalDate.of(2024, 1, 10),
-                LocalDate.of(2024, 1, 12),
+        // Destilleringer
+        Destillering d1 = Controller.createDestillering(
+                LocalDate.of(2021,1,10),
+                LocalDate.of(2021,1,15),
                 101,
                 "Evergreen",
-                250.0,
-                63.5,
+                300,
+                63,
                 "Tørv",
-                "Testdestillering 1"
+                "Første batch"
         );
 
-        Controller.createDestillering(
-                LocalDate.of(2024, 2, 5),
-                LocalDate.of(2024, 2, 7),
+        Destillering d2 = Controller.createDestillering(
+                LocalDate.of(2023,5,1),
+                LocalDate.of(2023,5,5),
                 102,
-                "Stairway",
-                180.0,
-                61.2,
+                "Irina",
+                250,
+                60,
                 "",
-                "Testdestillering 2"
+                "Anden batch"
+        );
+
+        // Påfyldninger
+        Controller.createPåfyldning(
+                LocalDate.of(2021,2,1),
+                "Anders",
+                new VæskeMængde(50, d1),
+                fad1
+        );
+
+        Controller.createPåfyldning(
+                LocalDate.of(2021,2,1),
+                "Anders",
+                new VæskeMængde(80, d1),
+                fad2
+        );
+
+        // Nyere påfyldning i samme fad
+        Controller.createPåfyldning(
+                LocalDate.of(2024,1,1),
+                "Mikkel",
+                new VæskeMængde(20, d2),
+                fad1
+        );
+
+        Controller.createPåfyldning(
+                LocalDate.of(2023,6,1),
+                "Peter",
+                new VæskeMængde(60, d2),
+                fad3
         );
     }
 

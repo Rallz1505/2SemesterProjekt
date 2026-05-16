@@ -136,7 +136,6 @@ public class LagerPane extends GridPane {
         cbLager.getItems().add(ingenValgt);
         cbLager.getItems().addAll(Controller.getLagre());
         cbLager.getSelectionModel().select(ingenValgt);
-        cbLager.setDisable(true);
         cbLager.setPrefWidth(200);
         this.add(cbLager, 3, 1);
         disableLagerpladsFields(true);
