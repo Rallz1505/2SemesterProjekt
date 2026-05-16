@@ -19,11 +19,12 @@ public class ForsidePane extends Application {
         initContent(gridPane);
         stage.setScene(scene);
         stage.setTitle("Produktion & Fadlager");
+
         stage.show();
     }
 
     private Label lblAdmin, lblDestillatør;
-    private Button btnRegistrerFad, btnFadoversigt, btnRegistrerDestillering, btnlager;
+    private Button btnRegistrerFad, btnFadoversigt, btnRegistrerDestillering, btnlager, btnOpretWhisky;
 
 
 
@@ -59,6 +60,9 @@ public class ForsidePane extends Application {
         btnRegistrerDestillering = new Button("Registrer destillering");
         pane.add(btnRegistrerDestillering,1,1);
         btnRegistrerDestillering.setOnAction(e-> new RegistreDES().open());
+        btnOpretWhisky = new Button("Opret whisky");
+        pane.add(btnOpretWhisky, 1,2);
+        btnOpretWhisky.setOnAction(e-> new WhiskyPane().open());
 
 
 
