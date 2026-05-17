@@ -1,31 +1,28 @@
 package GUI;
 
 import Controller.Controller;
-import Model.Fad;
+import Model.*;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+
 public class WhiskyPane extends GridPane {
 
     private TextField txfAntal, txfStoerrelse;
-
-    private Label lblTotal, lblAftappet, lblResterende;
-
+    private Label lblTotal, lblAftappet, lblResterende, lblLiterDerBruges, lblEfterTap;
     private Button btnOpretFlasker, btnVisHistorik;
 
     private ListView<Fad> lvwFade;
-//    private ListView<Flaske> lvwFlasker;
+    private ListView<Flaske> lvwFlasker;
 
     public void open() {
         Stage stage = new Stage();
-        stage.setTitle("Registrer Lager & Lagerplads");
+        stage.setTitle("opret whisky");
 
         initContent();
 
@@ -77,15 +74,21 @@ public class WhiskyPane extends GridPane {
         this.add(txfStoerrelse, 3, 2);
 
         this.add(new Label("Liter der bruges:"), 2, 3);
-        Label lblLiterDerBruges = new Label("-");
+        lblLiterDerBruges = new Label("-");
         this.add(lblLiterDerBruges, 3, 3);
 
         this.add(new Label("Liter tilbage:"), 2, 4);
-        Label lblEfterTap = new Label("-");
+        lblEfterTap = new Label("-");
         this.add(lblEfterTap, 3, 4);
 
         btnOpretFlasker = new Button("Opret flasker");
         this.add(btnOpretFlasker,3,5);
+        btnOpretFlasker.setOnAction(e -> opretFlasker());
+
+        // vis historik knap
+        btnVisHistorik = new Button("Vis historik");
+        this.add(btnVisHistorik, 4, 5);
+        btnVisHistorik.setOnAction(e -> visHistorik());
 
         // Lyttere til beregning
         txfAntal.textProperty().addListener((obs, o, n) -> opdaterBeregning());
@@ -109,20 +112,179 @@ public class WhiskyPane extends GridPane {
         lblFlaskerTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
         this.add(lblFlaskerTitle, 2, 6);
 
-//        lvwFlasker = new ListView<>();
-//        lvwFlasker.setPrefHeight(200);
-//        this.add(lvwFlasker, 2, 7, 2, 1);
+        lvwFlasker = new ListView<>();
+        lvwFlasker.setPrefHeight(200);
+        this.add(lvwFlasker, 2, 7, 2, 1);
 
 
     }
 
-    private void opdaterFadInfo(){}
+    private void opdaterFadInfo(){
+        Fad fad = lvwFade.getSelectionModel().getSelectedItem();
+        if(fad == null){
+            return;
+        }
+        WhiskyMængde wm = fad.getWhiskyMængde();
+        if (wm == null){
+            lblTotal.setText("0 L");
+            lblAftappet.setText("0 L");
+            lblResterende.setText("0 L");
+            lvwFlasker.getItems().clear();
+            return;
+        }
+        double total = wm.getMængde();
+        WhiskyProdukt wp = wm.getWhiskyProdukt();
 
-    private void opdaterBeregning(){}
+        double aftappet = 0;
+        for (Flaske f : wp.getFlasker()){
+            aftappet += f.getVolumen();
+        }
+        double resterende = total - aftappet;
 
-    private void opretFlasker(){}
+        lblTotal.setText(String.format("%.2f L", total));
+        lblAftappet.setText(String.format("%.2f L", aftappet));
+        lblResterende.setText(String.format("%.2f L", resterende));
 
-    private void visHistorik(){}
+        lvwFlasker.getItems().setAll(wp.getFlasker());
+
+        opdaterBeregning();
+
+    }
+
+    private void opdaterBeregning(){
+        Fad fad = lvwFade.getSelectionModel().getSelectedItem();
+        if (fad == null){
+            return;
+        }
+        WhiskyMængde wm = fad.getWhiskyMængde();
+        if (wm == null) return;
+
+        if (txfAntal.getText().isEmpty() || txfStoerrelse.getText().isEmpty()) {
+            lblLiterDerBruges.setText("-");
+            lblEfterTap.setText("-");
+            return;
+        }
+        try {
+            int antal = Integer.parseInt(txfAntal.getText().trim());
+            double stoerrelse = Double.parseDouble(txfStoerrelse.getText().trim());
+
+            double literDerBruges = antal * stoerrelse;
+            lblLiterDerBruges.setText(String.format("%.2f L", literDerBruges));
+
+            WhiskyProdukt wp = wm.getWhiskyProdukt();
+            double aftappet = 0;
+
+            for (Flaske f : wp.getFlasker()){
+                aftappet += f.getVolumen();
+            }
+            double resterende = wm.getMængde() - aftappet - literDerBruges;
+            lblEfterTap.setText(String.format("%.2f L", resterende));
+        } catch (NumberFormatException e) {
+            lblLiterDerBruges.setText("-");
+            lblEfterTap.setText("-");
+        }
+    }
+
+    private void opretFlasker(){
+        Fad fad = lvwFade.getSelectionModel().getSelectedItem();
+        if (fad == null) {
+            visAlert("Vælg et fad først.");
+            return;
+        }
+
+        WhiskyMængde wm = fad.getWhiskyMængde();
+        if (wm == null) {
+            visAlert("Dette fad har ingen whiskymængde.");
+            return;
+        }
+
+        WhiskyProdukt wp = wm.getWhiskyProdukt();
+
+        if (txfAntal.getText().isEmpty() || txfStoerrelse.getText().isEmpty()) {
+            visAlert("Udfyld antal og størrelse.");
+            return;
+        }
+
+        try {
+            int antal = Integer.parseInt(txfAntal.getText().trim());
+            double stoerrelse = Double.parseDouble(txfStoerrelse.getText().trim());
+
+            double literDerBruges = antal * stoerrelse;
+
+            double aftappet = 0;
+            for (Flaske f : wp.getFlasker()){
+                aftappet += f.getVolumen();
+            }
+            double resterende = wm.getMængde() - aftappet;
+
+            if (literDerBruges > resterende){
+                visAlert("Der er ikke nok whisky tilbage på fadet");
+                return;
+            }
+            for (int i = 0; i < antal; i++) {
+                int flaskeNr = wp.getFlasker().size() + 1;
+                wp.createFlaske(flaskeNr, stoerrelse);
+            }
+            wm.setMængde(wm.getMængde() - literDerBruges);
+
+            opdaterFadInfo();
+            txfAntal.clear();
+        } catch (NumberFormatException e){
+            visAlert("Ugyldig indtastning. Brug tal og punktum");
+        }
+    }
+
+    private void visHistorik(){
+        Flaske flaske = lvwFlasker.getSelectionModel().getSelectedItem();
+        if (flaske == null) {
+            visAlert("Vælg en flaske for at se historik.");
+            return;
+        }
+
+        WhiskyProdukt wp = flaske.getWhiskyProdukt();
+        WhiskyMængde wm = null;
+        Fad fad = null;
+
+        for (Fad f : Controller.getFade()) {
+            if (f.getWhiskyMængde() != null && f.getWhiskyMængde().getWhiskyProdukt() == wp) {
+                wm = f.getWhiskyMængde();
+                fad = f;
+            }
+        }
+
+        if (wm == null || fad == null) {
+            visAlert("Kunne ikke finde historik for denne flaske.");
+            return;
+        }
+
+        Destillering d = wm.getDestillering();
+
+        int antalPåfyldninger = fad.getPåfyldninger().size();
+        String kornsort = d.getKornSort();
+        int batch = d.getMaltBatch();
+        int lagringsaar = fad.getAlder();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Flaske nr: ").append(flaske.getFlaskeNr()).append("\n");
+        sb.append("Volumen: ").append(flaske.getVolumen()).append(" L\n\n");
+
+        sb.append("Batch: ").append(batch).append("\n");
+        sb.append("Antal påfyldninger: ").append(antalPåfyldninger).append("\n");
+        sb.append("Kornsort: ").append(kornsort).append("\n");
+        sb.append("Lagringstid: ").append(lagringsaar).append(" år\n");
+
+        visAlert(sb.toString());
+    }
+
+
+    // hjælpemetode
+    private void visAlert(String besked) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(besked);
+        alert.showAndWait();
+    }
 
 
 }

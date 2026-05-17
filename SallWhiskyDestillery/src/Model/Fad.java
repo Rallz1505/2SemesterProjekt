@@ -13,6 +13,7 @@ public class Fad {
     private double nuværendeMængde;
     private LagerPlads lagerPlads;
     private final ArrayList<Påfyldning> påfyldninger = new ArrayList<>();
+    private WhiskyMængde whiskyMængde;
 
     public Fad(double størrelse, int id, Leverandør leverandør, String tidligereIndhold, double nuværendeMængde, LagerPlads lagerPlads) {
         this.størrelse = størrelse;
@@ -120,6 +121,14 @@ public class Fad {
 
     public void setNuværendeMængde(double nuværendeMængde) {
         this.nuværendeMængde = nuværendeMængde;
+    }
+
+    public WhiskyMængde getWhiskyMængde() {
+        return whiskyMængde;
+    }
+
+    public void setWhiskyMængde(WhiskyMængde whiskyMængde) {
+        this.whiskyMængde = whiskyMængde;
     }
 
     public int getAlder() {
