@@ -84,4 +84,19 @@ public class LagerPlads {
     public void setBeskrivelse(String beskrivelse) {
         this.beskrivelse = beskrivelse;
     }
+
+    @Override
+    public String toString() {
+
+        String status = "Ledig";
+
+        if (fad != null) {
+            status = "Optaget af fad " + fad.getId();
+        }
+
+        return "Reol " + reolNr +
+                ", Hylde " + hyldeNr +
+                ", Plads " + pladsNr +
+                " | " + status;
+    }
 }

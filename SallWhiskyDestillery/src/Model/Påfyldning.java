@@ -61,4 +61,20 @@ public class Påfyldning {
     public Fad getFad() {
         return fad;
     }
+
+    @Override
+    public String toString() {
+
+        String fadId = "Ingen fad";
+
+        if (fad != null) {
+            fadId = String.valueOf(fad.getId());
+        }
+
+        return dato +
+                " | " + væskeMængde.getMængde() + " L" +
+                " | Fad " + fadId +
+                " | " + væskeMængde.getDestilat().getKornSort() +
+                " | Ansvarlig: " + ansvarlig;
+    }
 }

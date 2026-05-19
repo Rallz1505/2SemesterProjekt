@@ -36,4 +36,9 @@ public class Flaske {
     public void setWhiskyProdukt(WhiskyProdukt whiskyProdukt) {
         this.whiskyProdukt = whiskyProdukt;
     }
+
+    @Override
+    public String toString() {
+        return "Flaske " + flaskeNr + " (" + volumen + " L)";
+    }
 }

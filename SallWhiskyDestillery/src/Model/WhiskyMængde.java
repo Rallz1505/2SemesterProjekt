@@ -44,4 +44,9 @@ public class WhiskyMængde {
     public void setWhiskyProdukt(WhiskyProdukt whiskyProdukt) {
         this.whiskyProdukt = whiskyProdukt;
     }
+
+    @Override
+    public String toString() {
+        return mængde + " L fra fad " + getFad().getId();
+    }
 }

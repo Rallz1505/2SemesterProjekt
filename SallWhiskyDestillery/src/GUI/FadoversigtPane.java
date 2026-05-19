@@ -5,7 +5,6 @@ import Model.*;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -15,24 +14,21 @@ import java.util.List;
 
 public class FadoversigtPane extends GridPane {
 
-    private TabPane tabPane;
     private TextField txfSøgId, txfMængde, txfAnsvarlig;
-    private Button btnSøgId, btnSøgIndhold, btnVisAlle, btnVisTomme,
-            btnVisFyldte, btnVisKlar,btnVisBeskrivelse, btnÆndrPlacering;
     private ListView<Fad> lvwFade;
-    private ComboBox<String> cbIndhold;
     private ListView<Påfyldning> lvwPåfyldninger;
-    private ComboBox<Destillering> cbDest;
+    private ComboBox<String> cbIndhold;
     private ComboBox<Fad> cbFade;
+    private ComboBox<Destillering> cbDest;
     private DatePicker dpDato;
 
     public void open() {
         Stage stage = new Stage();
-        stage.setTitle("Fadoversigt");
+        stage.setTitle("Fadoversigt og påfyldning");
 
         initContent();
 
-        Scene scene = new Scene(this, 900, 600);
+        Scene scene = new Scene(this, 1100, 650);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
@@ -40,340 +36,248 @@ public class FadoversigtPane extends GridPane {
 
     private void initContent() {
         this.setPadding(new Insets(20));
-        this.setHgap(10);
-        this.setVgap(12);
+        this.setHgap(20);
+        this.setVgap(10);
 
-        tabPane = new TabPane();
-        tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        this.add(tabPane, 0, 0);
+        // Fadoversigt
+        this.add(new Label("Fadoversigt"), 0, 0);
 
-        // oversigt tab
-        Tab tabOversigt = new Tab("Fadoversigt");
-        tabOversigt.setContent(lavFadOversigtPane());
-        tabPane.getTabs().add(tabOversigt);
-
-        // påfyldningstab
-        Tab tabPåfyldning = new Tab("Registrer påfyldning");
-        tabPåfyldning.setContent(lavPåfyldningPane());
-        tabPane.getTabs().add(tabPåfyldning);
-    }
-    private GridPane lavFadOversigtPane() {
-        GridPane pane = new GridPane();
-        pane.setPadding(new Insets(20));
-        pane.setHgap(10);
-        pane.setVgap(12);
-
-        // søg efter id
-        Label lblSøgId = new Label("Søg efter fad ID:");
-        pane.add(lblSøgId, 0, 0);
-
+        this.add(new Label("Søg efter fad ID:"), 0, 1);
         txfSøgId = new TextField();
-        pane.add(txfSøgId, 0, 1);
+        this.add(txfSøgId, 0, 2);
 
-        btnSøgId = new Button("Søg ID");
-        pane.add(btnSøgId, 1, 1);
-        btnSøgId.setOnAction(e-> soegFad());
+        Button btnSøgId = new Button("Søg ID");
+        this.add(btnSøgId, 1, 2);
+        btnSøgId.setOnAction(e -> soegFad());
 
-        // se tidligere indhold
-        Label lblIndhold = new Label("Søg efter tidligere indhold:");
-        pane.add(lblIndhold, 0, 2);
-
+        this.add(new Label("Søg efter tidligere indhold:"), 0, 3);
         cbIndhold = new ComboBox<>();
         cbIndhold.getItems().addAll("BOURBON", "SHERRY", "RØDVIN", "PORTVIN");
-        pane.add(cbIndhold, 0, 3);
+        this.add(cbIndhold, 0, 4);
 
-        btnSøgIndhold = new Button("Søg indhold");
-        pane.add(btnSøgIndhold, 1, 3);
-        btnSøgIndhold.setOnAction(e-> soegTidligereIndhold());
+        Button btnSøgIndhold = new Button("Søg indhold");
+        this.add(btnSøgIndhold, 1, 4);
+        btnSøgIndhold.setOnAction(e -> soegTidligereIndhold());
 
-        // filterings knapper
+        Button btnVisAlle = new Button("Vis alle fade");
+        this.add(btnVisAlle, 0, 5);
+        btnVisAlle.setOnAction(e -> visAlle());
 
-        btnVisAlle = new Button("Vis alle fade");
-        pane.add(btnVisAlle, 0,5);
-        btnVisAlle.setOnAction(e-> visAlle());
+        Button btnVisTomme = new Button("Vis tomme fade");
+        this.add(btnVisTomme, 0, 6);
+        btnVisTomme.setOnAction(e -> visTomme());
 
-        btnVisTomme = new Button("Vis tomme fade");
-        pane.add(btnVisTomme,0,6);
-        btnVisTomme.setOnAction(e-> visTomme());
+        Button btnVisFyldte = new Button("Vis fyldte fade");
+        this.add(btnVisFyldte, 0, 7);
+        btnVisFyldte.setOnAction(e -> visFyldte());
 
-        btnVisFyldte = new Button("Vis fyldte fade");
-        pane.add(btnVisFyldte,0,7);
-        btnVisFyldte.setOnAction(e-> visFyldte());
+        Button btnVisKlar = new Button("Vis fade klar til aftapning");
+        this.add(btnVisKlar, 0, 8);
+        btnVisKlar.setOnAction(e -> visKlarTilAftapning());
 
-        btnVisKlar = new Button("Vis fade klar til aftapning");
-        pane.add(btnVisKlar,0,8);
-        btnVisKlar.setOnAction( e-> visKlarTilAftapning());
-
-        // beskrivelse og lagerplacering
-        btnVisBeskrivelse = new Button("Vis beskrivelse");
-        btnVisBeskrivelse.setOnAction(e-> visBekskrivelse());
-        btnÆndrPlacering = new Button("Ændr lagerplacering");
-        btnÆndrPlacering.setOnAction(e-> aendrePlacering());
-
-        pane.add(btnVisBeskrivelse, 0, 10);
-        pane.add(btnÆndrPlacering, 0, 11);
-
-        // fad liste
+        Button btnVisBeskrivelse = new Button("Vis beskrivelse");
+        this.add(btnVisBeskrivelse, 0, 9);
+        btnVisBeskrivelse.setOnAction(e -> visBeskrivelse());
 
         lvwFade = new ListView<>();
-        lvwFade.setPrefWidth(350);
-        lvwFade.setPrefHeight(350);
+        lvwFade.setPrefWidth(420);
+        lvwFade.setPrefHeight(500);
+        this.add(lvwFade, 2, 1, 1, 12);
 
-        pane.add(lvwFade, 2, 0, 1, 12);
+        lvwFade.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) {
+                cbFade.setValue(newVal);
+                visPåfyldningerForFad();
+            }
+        });
 
-        return pane;
-    }
+        // Påfyldning
+        this.add(new Label("Registrer påfyldning"), 3, 0);
 
-    private GridPane lavPåfyldningPane(){
-        GridPane pane = new GridPane();
-        pane.setPadding(new Insets(20));
-        pane.setHgap(10);
-        pane.setVgap(12);
-
-        // Vælg fad
-        Label lblFad = new Label("Vælg fad:");
-        pane.add(lblFad, 0, 0);
-
+        this.add(new Label("Vælg fad:"), 3, 1);
         cbFade = new ComboBox<>();
-        cbFade.setPrefWidth(200);
-        pane.add(cbFade, 0, 1);
+        cbFade.setPrefWidth(250);
+        this.add(cbFade, 3, 2);
+        cbFade.setOnAction(e -> visPåfyldningerForFad());
 
-        // Vælg destillering
-        Label lblDest = new Label("Vælg destillering:");
-        pane.add(lblDest, 0, 2);
-
+        this.add(new Label("Vælg destillering:"), 3, 3);
         cbDest = new ComboBox<>();
-        cbDest.setPrefWidth(200);
-        pane.add(cbDest, 0, 3);
+        cbDest.setPrefWidth(250);
+        this.add(cbDest, 3, 4);
 
-        // Mængde
-        Label lblMængde = new Label("Mængde (L):");
-        pane.add(lblMængde, 0, 4);
-
+        this.add(new Label("Mængde (L):"), 3, 5);
         txfMængde = new TextField();
-        pane.add(txfMængde, 0, 5);
+        this.add(txfMængde, 3, 6);
 
-        // Dato
-        Label lblDato = new Label("Dato:");
-        pane.add(lblDato, 0, 6);
-
+        this.add(new Label("Dato:"), 3, 7);
         dpDato = new DatePicker();
-        pane.add(dpDato, 0, 7);
+        this.add(dpDato, 3, 8);
 
-        //  Ansvarlig
-        Label lblAnsvarlig = new Label("Ansvarlig:");
-        pane.add(lblAnsvarlig, 0, 8);
-
+        this.add(new Label("Ansvarlig:"), 3, 9);
         txfAnsvarlig = new TextField();
-        pane.add(txfAnsvarlig, 0, 9);
+        this.add(txfAnsvarlig, 3, 10);
 
-        //Knap Registrer påfyldning
-        Button btnOpret = new Button("Registrer påfyldning");
-        pane.add(btnOpret, 0, 11);
+        Button btnOpretPåfyldning = new Button("Registrer påfyldning");
+        this.add(btnOpretPåfyldning, 3, 11);
+        btnOpretPåfyldning.setOnAction(e -> opretPåfyldning());
 
-        //ListView til at vise eksisterende påfyldninger
+        this.add(new Label("Påfyldninger for valgt fad:"), 4, 0);
+
         lvwPåfyldninger = new ListView<>();
         lvwPåfyldninger.setPrefWidth(350);
-        lvwPåfyldninger.setPrefHeight(350);
-        pane.add(lvwPåfyldninger, 2, 0, 1, 12);
+        lvwPåfyldninger.setPrefHeight(500);
+        this.add(lvwPåfyldninger, 4, 1, 1, 12);
 
-        return pane;
+        updateContent();
     }
 
-    // Knappe metoder til fadoversigt pane
+    private void updateContent() {
+        lvwFade.getItems().setAll(Controller.getFade());
+        cbFade.getItems().setAll(Controller.getFade());
+        cbDest.getItems().setAll(Controller.getDestilleringer());
+    }
 
-    private void soegFad(){
+    private void soegFad() {
         String tekst = txfSøgId.getText().trim();
-        if (tekst.isEmpty()){
+
+        if (tekst.isEmpty()) {
             return;
         }
+
         try {
             int id = Integer.parseInt(tekst);
             Fad fad = Controller.findFad(id);
 
-            if (fad != null){
+            if (fad != null) {
                 lvwFade.getItems().setAll(fad);
             } else {
                 lvwFade.getItems().clear();
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setHeaderText("Intet fad fundet");
-                alert.setContentText("Der findes ikke et fad med ID: " + id);
-                alert.showAndWait();
+                visAlert("Der findes ikke et fad med ID: " + id);
             }
-        } catch (NumberFormatException e ) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setHeaderText("Ugyldigt ID");
-            alert.setHeaderText("Indtast et gyldigt tal");
-            alert.showAndWait();
+
+        } catch (NumberFormatException e) {
+            visAlert("Indtast et gyldigt tal.");
         }
     }
 
-    private void soegTidligereIndhold(){
+    private void soegTidligereIndhold() {
         String valgt = cbIndhold.getValue();
-        if (valgt == null){
+
+        if (valgt == null) {
             return;
         }
+
         List<Fad> resultat = new ArrayList<>();
 
-        for (Fad f : Controller.getFade()){
-            if (f.getTidligereIndhold().equalsIgnoreCase(valgt)){
+        for (Fad f : Controller.getFade()) {
+            if (f.getTidligereIndhold().equalsIgnoreCase(valgt)) {
                 resultat.add(f);
             }
         }
 
         lvwFade.getItems().setAll(resultat);
-
     }
 
-    private void visBekskrivelse(){
-
+    private void visBeskrivelse() {
         Fad valgt = lvwFade.getSelectionModel().getSelectedItem();
-        if (valgt == null){
+
+        if (valgt == null) {
+            visAlert("Vælg et fad først.");
             return;
+        }
+
+        String placering = "Ingen placering";
+
+        if (valgt.getLagerPlads() != null) {
+            placering = valgt.getLagerPlads().getPlacering();
         }
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Fad beskrivelse");
         alert.setHeaderText(valgt.toString());
-        alert.setContentText(valgt.getTidligereIndhold());
+        alert.setContentText(
+                "Tidligere indhold: " + valgt.getTidligereIndhold() +
+                        "\nNuværende mængde: " + valgt.getNuværendeMængde() + " L" +
+                        "\nLedig kapacitet: " + valgt.ledigKapacitet() + " L" +
+                        "\nPlacering: " + placering
+        );
         alert.showAndWait();
-
-    }
-    private void aendrePlacering(){
-        Fad valgt = lvwFade.getSelectionModel().getSelectedItem();
-        if (valgt == null){
-            return;
-        }
-
-        // Ændre lagerplads pane
-        GridPane pane = new GridPane();
-        pane.setHgap(10);
-        pane.setVgap(10);
-
-        TextField txfReol = new TextField();
-        TextField txfHylde = new TextField();
-        TextField txfPlads = new TextField();
-        TextField txfBeskrivelse = new TextField();
-
-        pane.add(new Label("Reol:"), 0, 0);
-        pane.add(txfReol, 1, 0);
-
-        pane.add(new Label("Hylde:"), 0, 1);
-        pane.add(txfHylde, 1, 1);
-
-        pane.add(new Label("Plads:"), 0, 2);
-        pane.add(txfPlads,1,2);
-
-        pane.add(new Label("Beskrivelse:"), 0, 3);
-        pane.add(txfBeskrivelse, 1, 3);
-
-        // Aler vindue
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Ændr lagerplacering");
-        alert.setHeaderText("Indtast ny placering");
-        alert.getDialogPane().setContent(pane);
-
-        alert.getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK){
-                int reol = Integer.parseInt(txfReol.getText());
-                int hylde = Integer.parseInt(txfHylde.getText());
-                int plads = Integer.parseInt(txfPlads.getText());
-                String beskrivelse = txfBeskrivelse.getText();
-
-                // tjek om den indtastede lagerplads er ledig
-                LagerPlads nyPlads = new LagerPlads(reol, hylde, plads, beskrivelse);
-                if (!nyPlads.erLedig()){
-                    new Alert(Alert.AlertType.WARNING, "Pladsen er optaget").showAndWait();
-                    return;
-                }
-                // her vi ændre vi placering
-                Controller.placerFadPåLagerPlads(valgt, nyPlads);
-
-                new Alert(Alert.AlertType.INFORMATION, "Placering opdateret").showAndWait();
-            }
-        });
-
     }
 
-    private void visTomme(){
+    private void visTomme() {
         List<Fad> resultat = new ArrayList<>();
 
-        for (Fad f : Controller.getFade()){
-            if (f.getNuværendeMængde() == 0){
+        for (Fad f : Controller.getFade()) {
+            if (f.getNuværendeMængde() == 0) {
                 resultat.add(f);
             }
         }
-        if (resultat.isEmpty()) {
-            new Alert(Alert.AlertType.INFORMATION, "Der er ingen tomme fade.").showAndWait();
-        } else {
-            lvwFade.getItems().setAll(resultat);
-        }
-    }
 
-    private void visFyldte(){
-        List<Fad> resultat = new ArrayList<>();
-
-        for (Fad f : Controller.getFade()){
-            if (f.getNuværendeMængde() > 0){
-                resultat.add(f);
-            }
-        }
-        if (resultat.isEmpty()) {
-            new Alert(Alert.AlertType.INFORMATION, "Der er ingen fyldte fade.").showAndWait();
-            return;
-        }
         lvwFade.getItems().setAll(resultat);
-
     }
-    private void visAlle(){
+
+    private void visFyldte() {
+        List<Fad> resultat = new ArrayList<>();
+
+        for (Fad f : Controller.getFade()) {
+            if (f.getNuværendeMængde() > 0) {
+                resultat.add(f);
+            }
+        }
+
+        lvwFade.getItems().setAll(resultat);
+    }
+
+    private void visAlle() {
         lvwFade.getItems().setAll(Controller.getFade());
     }
 
-    private void visKlarTilAftapning(){
-        lvwFade.getItems().setAll(Controller.getFadeKlarTilAftapning());
-
+    private void visKlarTilAftapning() {
+        try {
+            lvwFade.getItems().setAll(Controller.getFadeKlarTilAftapning());
+        } catch (IllegalArgumentException e) {
+            lvwFade.getItems().clear();
+            visAlert(e.getMessage());
+        }
     }
 
-    // Knappe metoder til påfyldningspane
-
-    private void opretPåfyldning(){
+    private void opretPåfyldning() {
         Fad fad = cbFade.getValue();
         Destillering dest = cbDest.getValue();
-        String mængdeTxt = txfMængde.getText();
+        String mængdeTxt = txfMængde.getText().trim();
         LocalDate dato = dpDato.getValue();
-        String ansvarlig = txfAnsvarlig.getText();
+        String ansvarlig = txfAnsvarlig.getText().trim();
 
         if (fad == null || dest == null || mængdeTxt.isEmpty() || dato == null || ansvarlig.isEmpty()) {
-            new Alert(Alert.AlertType.WARNING, "Udfyld venligst alle felter.").showAndWait();
+            visAlert("Udfyld venligst alle felter.");
             return;
         }
-        double mængde;
+
         try {
-            mængde = Double.parseDouble(mængdeTxt);
+            double mængde = Double.parseDouble(mængdeTxt);
+            VæskeMængde vm = new VæskeMængde(mængde, dest);
+
+            Controller.createPåfyldning(dato, ansvarlig, vm, fad);
+
+            lvwPåfyldninger.getItems().setAll(fad.getPåfyldninger());
+            lvwFade.refresh();
+
+            txfMængde.clear();
+            txfAnsvarlig.clear();
+            dpDato.setValue(null);
+
+            visAlert("Påfyldning registreret.");
+
         } catch (NumberFormatException e) {
-            new Alert(Alert.AlertType.WARNING, "Mængde skal være et tal.").showAndWait();
-            return;
+            visAlert("Mængde skal være et tal.");
+        } catch (IllegalArgumentException e) {
+            visAlert(e.getMessage());
         }
-        VæskeMængde vm = new VæskeMængde(mængde, dest);
-        Påfyldning p = Controller.createPåfyldning(dato,ansvarlig,vm, fad);
-
-        if (p == null) {
-            new Alert(Alert.AlertType.WARNING, "Påfyldning mislykkedes.").showAndWait();
-            return;
-        }
-        lvwPåfyldninger.getItems().add(p);
-
-        new Alert(Alert.AlertType.INFORMATION, "Påfyldning registreret.").showAndWait();
-
-        txfMængde.clear();
-        txfAnsvarlig.clear();
-        dpDato.setValue(null);
     }
 
     private void visPåfyldningerForFad() {
         Fad fad = cbFade.getValue();
+
         if (fad == null) {
             lvwPåfyldninger.getItems().clear();
             return;
@@ -382,6 +286,11 @@ public class FadoversigtPane extends GridPane {
         lvwPåfyldninger.getItems().setAll(fad.getPåfyldninger());
     }
 
-
-
+    private void visAlert(String besked) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(besked);
+        alert.showAndWait();
+    }
 }

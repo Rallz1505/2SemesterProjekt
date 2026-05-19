@@ -55,7 +55,7 @@ public abstract class Controller {
         var alleFade = getFade();
         ArrayList<Fad> klarFade = new ArrayList<>();
         if (alleFade.isEmpty()){
-            throw new IllegalArgumentException("Der findes ingen fad");
+            return klarFade;
         }
         for (Fad f : alleFade){
             if (erKlarTilAftapning(f)){
@@ -155,6 +155,38 @@ public abstract class Controller {
         return storage.getWhiskyProdukter();
     }
 
+    public static WhiskyMængde createWhiskyMængde(WhiskyProdukt whiskyProdukt,
+                                                  Påfyldning påfyldning,
+                                                  double mængde) {
+
+        if (mængde <= 0) {
+            throw new IllegalArgumentException("Mængden skal være større end 0.");
+        }
+
+        double brugtMængde = 0;
+
+        for (WhiskyProdukt w : storage.getWhiskyProdukter()) {
+            for (WhiskyMængde wm : w.getWhiskyMængder()) {
+                if (wm.getPåfyldning() == påfyldning) {
+                    brugtMængde += wm.getMængde();
+
+                }
+            }
+        }
+
+        if (brugtMængde + mængde > påfyldning.getVæskeMængde().getMængde()) {
+            throw new IllegalArgumentException("Der er ikke nok mængde tilbage i påfyldningen.");
+        }
+
+        if (påfyldning.getFad().getNuværendeMængde() < mængde) {
+            throw new IllegalArgumentException("Der er ikke nok væske i fadet.");
+        }
+
+        påfyldning.getFad().fjernMængde(mængde);
+
+        return whiskyProdukt.createWhiskyMængde(påfyldning, mængde);
+    }
+
     public static WhiskyProdukt findWhiskyProdukt(int id) {
 
         WhiskyProdukt fundetWhiskyProdukt = null;
@@ -203,6 +235,27 @@ public abstract class Controller {
         }
 
         return kanFordeles;
+    }
+
+    public static Flaske createFlaske(WhiskyProdukt whiskyProdukt,
+                                      int flaskeNr,
+                                      double volumen) {
+
+        if (volumen <= 0) {
+            throw new IllegalArgumentException("Volumen skal være større end 0.");
+        }
+
+        double tappetMængde = 0;
+
+        for (Flaske flaske : whiskyProdukt.getFlasker()) {
+            tappetMængde += flaske.getVolumen();
+        }
+
+        if (tappetMængde + volumen > whiskyProdukt.beregnSamletMængde()) {
+            throw new IllegalArgumentException("Der er ikke nok whisky tilbage i produktet.");
+        }
+
+        return whiskyProdukt.createFlaske(flaskeNr, volumen);
     }
 
 
