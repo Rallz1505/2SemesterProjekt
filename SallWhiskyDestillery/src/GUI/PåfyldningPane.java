@@ -1,7 +1,7 @@
 package GUI;
 
 import Controller.Controller;
-import Model.Leverandør;
+import Model.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,21 +11,25 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class LeverandørPane extends GridPane {
+import java.time.LocalDate;
+
+public class PåfyldningPane extends GridPane {
 
     //Brugt AI til at gøre det pænt så det var lidt mere behageligt at kigge på :), men ikk ebrugt det til andet.
 
-    private TextField txfId, txfNavn, txfLand, txfKontaktPerson, txfTelefon, txfEmail;
-    private TextArea txaKommentar;
-    private ListView<Leverandør> lvwLeverandører;
+    private ComboBox<Fad> cbFad;
+    private ComboBox<Destillering> cbDestillering;
+    private TextField txfMængde, txfAnsvarlig;
+    private DatePicker dpDato;
+    private ListView<Påfyldning> lvwPåfyldninger;
 
     public void open() {
         Stage stage = new Stage();
-        stage.setTitle("Registrer leverandør");
+        stage.setTitle("Registrer påfyldning");
 
         initContent();
 
-        Scene scene = new Scene(this, 900, 540);
+        Scene scene = new Scene(this, 900, 560);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
@@ -47,7 +51,7 @@ public class LeverandørPane extends GridPane {
 
         this.getColumnConstraints().addAll(c1, c2);
 
-        Label lblTitle = new Label("Registrer leverandør");
+        Label lblTitle = new Label("Registrer påfyldning");
         lblTitle.setStyle(
                 "-fx-font-size: 28px;" +
                         "-fx-font-weight: bold;" +
@@ -57,36 +61,41 @@ public class LeverandørPane extends GridPane {
 
         VBox formBox = createBox();
 
-        Label lblFormTitle = createSectionLabel("Ny leverandør");
+        cbFad = new ComboBox<>();
+        cbFad.setPrefWidth(300);
+        cbFad.setOnAction(e -> visPåfyldningerForFad());
 
-        txfId = createTextField();
-        txfNavn = createTextField();
-        txfLand = createTextField();
-        txfKontaktPerson = createTextField();
-        txfTelefon = createTextField();
-        txfEmail = createTextField();
+        cbDestillering = new ComboBox<>();
+        cbDestillering.setPrefWidth(300);
 
-        txaKommentar = createTextArea();
+        txfMængde = createTextField();
 
-        Button btnOpret = createButton("Opret leverandør");
-        btnOpret.setOnAction(e -> opretLeverandør());
+        dpDato = new DatePicker();
+        dpDato.setPrefWidth(300);
+
+        txfAnsvarlig = createTextField();
+
+        Button btnOpret = createButton("Registrer påfyldning");
+        btnOpret.setOnAction(e -> opretPåfyldning());
 
         formBox.getChildren().addAll(
-                lblFormTitle,
-                createLabel("ID:"),
-                txfId,
-                createLabel("Navn:"),
-                txfNavn,
-                createLabel("Land:"),
-                txfLand,
-                createLabel("Kontaktperson:"),
-                txfKontaktPerson,
-                createLabel("Telefon:"),
-                txfTelefon,
-                createLabel("Email:"),
-                txfEmail,
-                createLabel("Kommentar:"),
-                txaKommentar,
+                createSectionLabel("Ny påfyldning"),
+
+                createLabel("Vælg fad:"),
+                cbFad,
+
+                createLabel("Vælg destillering:"),
+                cbDestillering,
+
+                createLabel("Mængde (L):"),
+                txfMængde,
+
+                createLabel("Dato:"),
+                dpDato,
+
+                createLabel("Ansvarlig:"),
+                txfAnsvarlig,
+
                 btnOpret
         );
 
@@ -94,19 +103,17 @@ public class LeverandørPane extends GridPane {
 
         VBox listBox = createBox();
 
-        Label lblListTitle = createSectionLabel("Leverandører");
-
-        lvwLeverandører = new ListView<>();
-        lvwLeverandører.setPrefWidth(340);
-        lvwLeverandører.setPrefHeight(390);
-        lvwLeverandører.setStyle(
+        lvwPåfyldninger = new ListView<>();
+        lvwPåfyldninger.setPrefWidth(340);
+        lvwPåfyldninger.setPrefHeight(390);
+        lvwPåfyldninger.setStyle(
                 "-fx-control-inner-background: #f5e6d0;" +
                         "-fx-font-size: 13px;"
         );
 
         listBox.getChildren().addAll(
-                lblListTitle,
-                lvwLeverandører
+                createSectionLabel("Påfyldninger på valgt fad"),
+                lvwPåfyldninger
         );
 
         this.add(listBox, 1, 1);
@@ -114,8 +121,69 @@ public class LeverandørPane extends GridPane {
         updateContent();
     }
 
+    private void opretPåfyldning() {
+        Fad fad = cbFad.getValue();
+        Destillering destillering = cbDestillering.getValue();
+        LocalDate dato = dpDato.getValue();
+        String ansvarlig = txfAnsvarlig.getText().trim();
+
+        if (fad == null || destillering == null || dato == null ||
+                txfMængde.getText().trim().isEmpty() || ansvarlig.isEmpty()) {
+
+            visAlert("Udfyld alle felter.");
+            return;
+        }
+
+        try {
+            double mængde = Double.parseDouble(txfMængde.getText().trim());
+
+            VæskeMængde væskeMængde = new VæskeMængde(mængde, destillering);
+
+            Controller.createPåfyldning(dato, ansvarlig, væskeMængde, fad);
+
+            updateContent();
+            cbFad.setValue(fad);
+            cbDestillering.setValue(destillering);
+            visPåfyldningerForFad();
+            txfMængde.clear();
+            txfAnsvarlig.clear();
+            dpDato.setValue(null);
+
+            visAlert("Påfyldning registreret.");
+
+        } catch (NumberFormatException e) {
+            visAlert("Mængde skal være et tal.");
+        } catch (IllegalArgumentException e) {
+            visAlert(e.getMessage());
+        }
+    }
+
+    private void updateContent() {
+        Fad valgtFad = cbFad.getValue();
+        Destillering valgtDestillering = cbDestillering.getValue();
+
+        cbFad.getItems().setAll(Controller.getFade());
+        cbDestillering.getItems().setAll(Controller.getDestilleringer());
+
+        cbFad.setValue(valgtFad);
+        cbDestillering.setValue(valgtDestillering);
+
+        visPåfyldningerForFad();
+    }
+
+    private void visPåfyldningerForFad() {
+        Fad fad = cbFad.getValue();
+
+        if (fad == null) {
+            lvwPåfyldninger.getItems().clear();
+            return;
+        }
+
+        lvwPåfyldninger.getItems().setAll(fad.getPåfyldninger());
+    }
+
     private VBox createBox() {
-        VBox box = new VBox(9);
+        VBox box = new VBox(10);
         box.setPadding(new Insets(20));
         box.setAlignment(Pos.TOP_CENTER);
         box.setStyle(
@@ -157,17 +225,6 @@ public class LeverandørPane extends GridPane {
         return tf;
     }
 
-    private TextArea createTextArea() {
-        TextArea ta = new TextArea();
-        ta.setPrefWidth(300);
-        ta.setPrefHeight(70);
-        ta.setStyle(
-                "-fx-background-radius: 10;" +
-                        "-fx-font-size: 13px;"
-        );
-        return ta;
-    }
-
     private Button createButton(String text) {
         Button button = new Button(text);
         button.setPrefWidth(220);
@@ -180,49 +237,6 @@ public class LeverandørPane extends GridPane {
                         "-fx-cursor: hand;"
         );
         return button;
-    }
-
-    private void opretLeverandør() {
-        if (txfId.getText().trim().isEmpty() ||
-                txfNavn.getText().trim().isEmpty() ||
-                txfLand.getText().trim().isEmpty()) {
-
-            visAlert("Udfyld minimum ID, navn og land.");
-            return;
-        }
-
-        try {
-            int id = Integer.parseInt(txfId.getText().trim());
-            String navn = txfNavn.getText().trim();
-            String land = txfLand.getText().trim();
-            String kontaktPerson = txfKontaktPerson.getText().trim();
-            String telefon = txfTelefon.getText().trim();
-            String email = txfEmail.getText().trim();
-            String kommentar = txaKommentar.getText().trim();
-
-            Controller.createLeverandør(id, navn, land, kontaktPerson, telefon, email, kommentar);
-
-            updateContent();
-
-            txfId.clear();
-            txfNavn.clear();
-            txfLand.clear();
-            txfKontaktPerson.clear();
-            txfTelefon.clear();
-            txfEmail.clear();
-            txaKommentar.clear();
-
-            visAlert("Leverandør oprettet.");
-
-        } catch (NumberFormatException e) {
-            visAlert("ID skal være et tal.");
-        } catch (IllegalArgumentException e) {
-            visAlert(e.getMessage());
-        }
-    }
-
-    private void updateContent() {
-        lvwLeverandører.getItems().setAll(Controller.getLeverandører());
     }
 
     private void visAlert(String besked) {

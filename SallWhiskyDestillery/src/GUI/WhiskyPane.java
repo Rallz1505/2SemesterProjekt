@@ -3,25 +3,24 @@ package GUI;
 import Controller.Controller;
 import Model.*;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class WhiskyPane extends GridPane {
 
+    //Brugt AI til at gøre det pænt så det var lidt mere behageligt at kigge på :), men ikk ebrugt det til andet.
+
     private TextField txfId, txfNavn, txfBeskrivelse, txfAlkohol, txfVand;
     private TextField txfWhiskyMængde, txfAntalFlasker, txfFlaskeVolumen;
-
     private ComboBox<WhiskyProdukt> cbWhiskyProdukt;
-    private ComboBox<Påfyldning> cbPåfyldning;
-
+    private ComboBox<Fad> cbFad;
     private ListView<WhiskyMængde> lvwWhiskyMængder;
     private ListView<Flaske> lvwFlasker;
-
     private TextArea txaHistorik;
 
     public void open() {
@@ -30,114 +29,143 @@ public class WhiskyPane extends GridPane {
 
         initContent();
 
-        Scene scene = new Scene(this, 1100, 650);
+        Scene scene = new Scene(this, 1300, 720);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
     }
 
     private void initContent() {
-        this.setPadding(new Insets(20));
-        this.setHgap(15);
-        this.setVgap(10);
+        this.setPadding(new Insets(30));
+        this.setHgap(25);
+        this.setVgap(15);
+        this.setAlignment(Pos.CENTER);
 
-        // Opret whiskyprodukt
-        this.add(new Label("Opret whiskyprodukt"), 0, 0);
+        this.setStyle("-fx-background-color: linear-gradient(to bottom, #3b2415, #1f120a);");
 
-        this.add(new Label("ID:"), 0, 1);
-        txfId = new TextField();
-        this.add(txfId, 1, 1);
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setMinWidth(300);
 
-        this.add(new Label("Navn:"), 0, 2);
-        txfNavn = new TextField();
-        this.add(txfNavn, 1, 2);
+        ColumnConstraints c2 = new ColumnConstraints();
+        c2.setMinWidth(300);
 
-        this.add(new Label("Beskrivelse:"), 0, 3);
-        txfBeskrivelse = new TextField();
-        this.add(txfBeskrivelse, 1, 3);
+        ColumnConstraints c3 = new ColumnConstraints();
+        c3.setMinWidth(300);
 
-        this.add(new Label("Alkohol %:"), 0, 4);
-        txfAlkohol = new TextField();
-        this.add(txfAlkohol, 1, 4);
+        ColumnConstraints c4 = new ColumnConstraints();
+        c4.setMinWidth(320);
 
-        this.add(new Label("Vandmængde:"), 0, 5);
-        txfVand = new TextField();
-        this.add(txfVand, 1, 5);
+        this.getColumnConstraints().addAll(c1, c2, c3, c4);
 
-        Button btnOpretWhisky = new Button("Opret whiskyprodukt");
-        this.add(btnOpretWhisky, 1, 6);
+        Label lblTitle = new Label("Opret whiskyprodukt");
+        lblTitle.setStyle(
+                "-fx-font-size: 28px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #f3d7a3;"
+        );
+        this.add(lblTitle, 0, 0, 4, 1);
+
+        VBox produktBox = createBox();
+
+        Label lblProduktTitle = createSectionLabel("Nyt whiskyprodukt");
+
+        txfId = createTextField();
+        txfNavn = createTextField();
+        txfBeskrivelse = createTextField();
+        txfAlkohol = createTextField();
+        txfVand = createTextField();
+
+        Button btnOpretWhisky = createButton("Opret whiskyprodukt");
         btnOpretWhisky.setOnAction(e -> opretWhiskyProdukt());
 
-        // Tilføj whiskymængde
-        this.add(new Label("Vælg whiskyprodukt:"), 2, 1);
+        produktBox.getChildren().addAll(lblProduktTitle, createLabel("ID:"), txfId, createLabel("Navn:"), txfNavn, createLabel("Beskrivelse:"), txfBeskrivelse, createLabel("Alkohol %:"), txfAlkohol, createLabel("Vandmængde:"), txfVand, btnOpretWhisky);
+
+        this.add(produktBox, 0, 1);
+
+        VBox mængdeBox = createBox();
+
+        Label lblMængdeTitle = createSectionLabel("Tilføj whisky fra fad");
+
         cbWhiskyProdukt = new ComboBox<>();
         cbWhiskyProdukt.setPrefWidth(250);
-        this.add(cbWhiskyProdukt, 3, 1);
         cbWhiskyProdukt.setOnAction(e -> opdaterValgtWhiskyProdukt());
 
-        this.add(new Label("Vælg påfyldning:"), 2, 2);
-        cbPåfyldning = new ComboBox<>();
-        cbPåfyldning.setPrefWidth(250);
-        this.add(cbPåfyldning, 3, 2);
+        cbFad = new ComboBox<>();
+        cbFad.setPrefWidth(250);
 
-        this.add(new Label("Mængde fra påfyldning:"), 2, 3);
-        txfWhiskyMængde = new TextField();
-        this.add(txfWhiskyMængde, 3, 3);
+        txfWhiskyMængde = createTextField();
 
-        Button btnTilføjMængde = new Button("Tilføj whiskymængde");
-        this.add(btnTilføjMængde, 3, 4);
+        Button btnTilføjMængde = createButton("Tilføj mængde fra fad");
         btnTilføjMængde.setOnAction(e -> tilføjWhiskyMængde());
 
-        lvwWhiskyMængder = new ListView<>();
-        lvwWhiskyMængder.setPrefWidth(300);
-        lvwWhiskyMængder.setPrefHeight(180);
-        this.add(lvwWhiskyMængder, 2, 5, 2, 4);
+        mængdeBox.getChildren().addAll(lblMængdeTitle, createLabel("Vælg whiskyprodukt:"), cbWhiskyProdukt, createLabel("Vælg fad:"), cbFad, createLabel("Mængde fra fad:"), txfWhiskyMængde, btnTilføjMængde);
 
-        // Flasker
-        this.add(new Label("Antal flasker:"), 4, 1);
-        txfAntalFlasker = new TextField();
-        this.add(txfAntalFlasker, 5, 1);
+        this.add(mængdeBox, 1, 1);
 
-        this.add(new Label("Flaskevolumen:"), 4, 2);
-        txfFlaskeVolumen = new TextField("0.7");
-        this.add(txfFlaskeVolumen, 5, 2);
+        VBox flaskerBox = createBox();
 
-        Button btnOpretFlasker = new Button("Opret flasker");
-        this.add(btnOpretFlasker, 5, 3);
+        Label lblFlaskerTitle = createSectionLabel("Registrer flasker");
+
+        txfAntalFlasker = createTextField();
+        txfFlaskeVolumen = createTextField();
+        txfFlaskeVolumen.setText("0.7");
+
+        Button btnOpretFlasker = createButton("Opret flasker");
         btnOpretFlasker.setOnAction(e -> opretFlasker());
 
-        lvwFlasker = new ListView<>();
-        lvwFlasker.setPrefWidth(300);
-        lvwFlasker.setPrefHeight(180);
-        this.add(lvwFlasker, 4, 5, 2, 4);
+        flaskerBox.getChildren().addAll(lblFlaskerTitle, createLabel("Antal flasker:"), txfAntalFlasker, createLabel("Flaskevolumen:"), txfFlaskeVolumen, btnOpretFlasker);
 
-        // Historik
-        Button btnVisHistorik = new Button("Vis historik");
-        this.add(btnVisHistorik, 0, 9);
+        this.add(flaskerBox, 2, 1);
+
+        VBox oversigtBox = createBox();
+
+        Label lblOversigtTitle = createSectionLabel("Oversigt");
+
+        lvwWhiskyMængder = new ListView<>();
+        lvwWhiskyMængder.setPrefWidth(280);
+        lvwWhiskyMængder.setPrefHeight(160);
+        lvwWhiskyMængder.setStyle(
+                "-fx-control-inner-background: #f5e6d0;" +
+                        "-fx-font-size: 13px;"
+        );
+
+        lvwFlasker = new ListView<>();
+        lvwFlasker.setPrefWidth(280);
+        lvwFlasker.setPrefHeight(160);
+        lvwFlasker.setStyle(
+                "-fx-control-inner-background: #f5e6d0;" +
+                        "-fx-font-size: 13px;"
+        );
+
+        Button btnVisHistorik = createButton("Vis historik");
         btnVisHistorik.setOnAction(e -> visHistorik());
+
+        oversigtBox.getChildren().addAll(lblOversigtTitle, createLabel("Whiskymængder:"), lvwWhiskyMængder, createLabel("Flasker:"), lvwFlasker, btnVisHistorik);
+
+        this.add(oversigtBox, 3, 1);
 
         txaHistorik = new TextArea();
         txaHistorik.setEditable(false);
-        txaHistorik.setPrefWidth(650);
         txaHistorik.setPrefHeight(180);
-        this.add(txaHistorik, 1, 9, 5, 1);
+        txaHistorik.setStyle(
+                "-fx-control-inner-background: #f5e6d0;" +
+                        "-fx-font-size: 13px;"
+        );
+
+        this.add(txaHistorik, 0, 2, 4, 1);
 
         updateContent();
     }
 
     private void updateContent() {
+        WhiskyProdukt valgtProdukt = cbWhiskyProdukt.getValue();
+        Fad valgtFad = cbFad.getValue();
+
         cbWhiskyProdukt.getItems().setAll(Controller.getWhiskyProdukter());
-        cbPåfyldning.getItems().setAll(getAllePåfyldninger());
-    }
+        cbFad.getItems().setAll(Controller.getFade());
 
-    private List<Påfyldning> getAllePåfyldninger() {
-        List<Påfyldning> påfyldninger = new ArrayList<>();
-
-        for (Fad fad : Controller.getFade()) {
-            påfyldninger.addAll(fad.getPåfyldninger());
-        }
-
-        return påfyldninger;
+        cbWhiskyProdukt.setValue(valgtProdukt);
+        cbFad.setValue(valgtFad);
     }
 
     private void opretWhiskyProdukt() {
@@ -148,12 +176,11 @@ public class WhiskyPane extends GridPane {
             double alkohol = Double.parseDouble(txfAlkohol.getText().trim());
             double vand = Double.parseDouble(txfVand.getText().trim());
 
-            WhiskyProdukt whiskyProdukt = Controller.createWhiskyProdukt(
-                    id, navn, beskrivelse, alkohol, vand
-            );
+            WhiskyProdukt whiskyProdukt = Controller.createWhiskyProdukt(id, navn, beskrivelse, alkohol, vand);
 
             updateContent();
             cbWhiskyProdukt.setValue(whiskyProdukt);
+            opdaterValgtWhiskyProdukt();
 
             txfId.clear();
             txfNavn.clear();
@@ -165,24 +192,30 @@ public class WhiskyPane extends GridPane {
 
         } catch (NumberFormatException e) {
             visAlert("ID, alkoholprocent og vandmængde skal være tal.");
+        } catch (IllegalArgumentException e) {
+            visAlert(e.getMessage());
         }
     }
 
     private void tilføjWhiskyMængde() {
         WhiskyProdukt whiskyProdukt = cbWhiskyProdukt.getValue();
-        Påfyldning påfyldning = cbPåfyldning.getValue();
+        Fad fad = cbFad.getValue();
 
-        if (whiskyProdukt == null || påfyldning == null || txfWhiskyMængde.getText().trim().isEmpty()) {
-            visAlert("Vælg whiskyprodukt, påfyldning og indtast mængde.");
+        if (whiskyProdukt == null || fad == null || txfWhiskyMængde.getText().trim().isEmpty()) {
+            visAlert("Vælg whiskyprodukt, fad og indtast mængde.");
             return;
         }
 
         try {
             double mængde = Double.parseDouble(txfWhiskyMængde.getText().trim());
 
-            Controller.createWhiskyMængde(whiskyProdukt, påfyldning, mængde);
+            Controller.createWhiskyMængde(whiskyProdukt, fad, mængde);
 
+            updateContent();
+            cbWhiskyProdukt.setValue(whiskyProdukt);
+            cbFad.setValue(fad);
             opdaterValgtWhiskyProdukt();
+
             txfWhiskyMængde.clear();
 
             visAlert("Whiskymængde tilføjet.");
@@ -208,10 +241,14 @@ public class WhiskyPane extends GridPane {
 
             for (int i = 0; i < antal; i++) {
                 int flaskeNr = whiskyProdukt.getFlasker().size() + 1;
+
                 Controller.createFlaske(whiskyProdukt, flaskeNr, volumen);
             }
 
+            updateContent();
+            cbWhiskyProdukt.setValue(whiskyProdukt);
             opdaterValgtWhiskyProdukt();
+
             txfAntalFlasker.clear();
 
             visAlert("Flasker oprettet.");
@@ -234,7 +271,10 @@ public class WhiskyPane extends GridPane {
         }
 
         lvwWhiskyMængder.getItems().setAll(whiskyProdukt.getWhiskyMængder());
+
         lvwFlasker.getItems().setAll(whiskyProdukt.getFlasker());
+
+        txaHistorik.setText(whiskyProdukt.getHistorik());
     }
 
     private void visHistorik() {
@@ -246,6 +286,63 @@ public class WhiskyPane extends GridPane {
         }
 
         txaHistorik.setText(whiskyProdukt.getHistorik());
+    }
+
+    private VBox createBox() {
+        VBox box = new VBox(9);
+        box.setPadding(new Insets(20));
+        box.setAlignment(Pos.TOP_CENTER);
+        box.setStyle(
+                "-fx-background-color: #5a321b;" +
+                        "-fx-background-radius: 18;" +
+                        "-fx-border-color: #b88746;" +
+                        "-fx-border-radius: 18;" +
+                        "-fx-border-width: 1.5;"
+        );
+        return box;
+    }
+
+    private Label createSectionLabel(String text) {
+        Label label = new Label(text);
+        label.setStyle(
+                "-fx-font-size: 20px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #f3d7a3;"
+        );
+        return label;
+    }
+
+    private Label createLabel(String text) {
+        Label label = new Label(text);
+        label.setStyle(
+                "-fx-text-fill: #f3d7a3;" +
+                        "-fx-font-size: 13px;"
+        );
+        return label;
+    }
+
+    private TextField createTextField() {
+        TextField tf = new TextField();
+        tf.setPrefWidth(250);
+        tf.setStyle(
+                "-fx-background-radius: 10;" +
+                        "-fx-font-size: 13px;"
+        );
+        return tf;
+    }
+
+    private Button createButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(220);
+        button.setPrefHeight(38);
+        button.setStyle(
+                "-fx-background-color: #b88746;" +
+                        "-fx-text-fill: #1f120a;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-cursor: hand;"
+        );
+        return button;
     }
 
     private void visAlert(String besked) {

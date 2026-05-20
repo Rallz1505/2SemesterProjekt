@@ -1,6 +1,8 @@
 package Model;
 
-public class VæskeMængde {
+import java.io.Serializable;
+
+public class VæskeMængde implements Serializable {
 
     private double mængde;
     private Destillering destilat;
@@ -14,15 +16,8 @@ public class VæskeMængde {
         return mængde;
     }
 
-    public void setMængde(double mængde) {
-        this.mængde = mængde;
-    }
-
     public Destillering getDestilat() {
         return destilat;
     }
 
-    public void setDestilat(Destillering destilat) {
-        this.destilat = destilat;
-    }
 }

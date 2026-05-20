@@ -1,6 +1,8 @@
 package Model;
 
-public class Flaske {
+import java.io.Serializable;
+
+public class Flaske implements Serializable {
 
     private int flaskeNr;
     private double volumen;
@@ -17,24 +19,8 @@ public class Flaske {
         return flaskeNr;
     }
 
-    public void setFlaskeNr(int flaskeNr) {
-        this.flaskeNr = flaskeNr;
-    }
-
     public double getVolumen() {
         return volumen;
-    }
-
-    public void setVolumen(double volumen) {
-        this.volumen = volumen;
-    }
-
-    public WhiskyProdukt getWhiskyProdukt() {
-        return whiskyProdukt;
-    }
-
-    public void setWhiskyProdukt(WhiskyProdukt whiskyProdukt) {
-        this.whiskyProdukt = whiskyProdukt;
     }
 
     @Override

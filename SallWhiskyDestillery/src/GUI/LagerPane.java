@@ -4,141 +4,218 @@ import Controller.Controller;
 import Model.Lager;
 import Model.LagerPlads;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class LagerPane extends GridPane {
 
-    private Lager ingenValgt;
+    //Brugt AI til at gøre det pænt så det var lidt mere behageligt at kigge på :), men ikk ebrugt det til andet.
 
+    private Lager ingenValgt;
     private TextField txfLagerNavn, txfAdresse, txfKapacitet;
     private TextArea txaLagerBeskrivelse;
-
     private ComboBox<Lager> cbLager;
     private TextField txfReol, txfHylde, txfPlads;
     private TextArea txaPladsBeskrivelse;
-
     private ListView<LagerPlads> lvwPladser;
 
     public void open() {
         Stage stage = new Stage();
-        stage.setTitle("Registrer Lager & Lagerplads");
+        stage.setTitle("Lager administration");
 
         initContent();
 
-        Scene scene = new Scene(this, 900, 450);
+        Scene scene = new Scene(this, 1000, 560);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
     }
 
     private void initContent() {
-        this.setPadding(new Insets(20));
-        this.setHgap(10);
-        this.setVgap(12);
+        this.setPadding(new Insets(30));
+        this.setHgap(25);
+        this.setVgap(15);
+        this.setAlignment(Pos.CENTER);
 
-        ColumnConstraints col0 = new ColumnConstraints();
-        col0.setPrefWidth(120);
+        this.setStyle("-fx-background-color: linear-gradient(to bottom, #3b2415, #1f120a);");
 
-        ColumnConstraints col1 = new ColumnConstraints();
-        col1.setPrefWidth(180);
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setMinWidth(300);
 
-        ColumnConstraints col2 = new ColumnConstraints();
-        col2.setPrefWidth(120);
+        ColumnConstraints c2 = new ColumnConstraints();
+        c2.setMinWidth(300);
 
-        ColumnConstraints col3 = new ColumnConstraints();
-        col3.setPrefWidth(180);
+        ColumnConstraints c3 = new ColumnConstraints();
+        c3.setMinWidth(300);
 
-        ColumnConstraints col4 = new ColumnConstraints();
-        col4.setPrefWidth(250);
+        this.getColumnConstraints().addAll(c1, c2, c3);
 
-        this.getColumnConstraints().addAll(col0, col1, col2, col3, col4);
+        Label lblTitle = new Label("Lager administration");
+        lblTitle.setStyle(
+                "-fx-font-size: 28px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #f3d7a3;"
+        );
+        this.add(lblTitle, 0, 0, 3, 1);
 
-        // Lager
-        Label lblLagerTitle = new Label("Registrer Lager");
-        lblLagerTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        this.add(lblLagerTitle, 1, 0);
+        VBox lagerBox = createBox();
+        Label lblLagerTitle = createSectionLabel("Registrer lager");
 
-        this.add(new Label("Lagernavn:"), 0, 1);
-        txfLagerNavn = new TextField();
-        this.add(txfLagerNavn, 1, 1);
+        txfLagerNavn = createTextField();
+        txfAdresse = createTextField();
+        txfKapacitet = createTextField();
 
-        this.add(new Label("Adresse:"), 0, 2);
-        txfAdresse = new TextField();
-        this.add(txfAdresse, 1, 2);
+        txaLagerBeskrivelse = createTextArea();
 
-        this.add(new Label("Lager ID:"), 0, 3);
-        txfKapacitet = new TextField();
-        this.add(txfKapacitet, 1, 3);
-
-        this.add(new Label("Beskrivelse:"), 0, 4);
-        txaLagerBeskrivelse = new TextArea();
-        txaLagerBeskrivelse.setPrefRowCount(3);
-        this.add(txaLagerBeskrivelse, 1, 4);
-
-        Button btnSaveLager = new Button("Opret Lager");
-        this.add(btnSaveLager, 1, 5);
+        Button btnSaveLager = createButton("Opret lager");
         btnSaveLager.setOnAction(e -> gemLager());
 
-        // Lagerplads
-        Label lblPladsTitle = new Label("Registrer Lagerplads");
-        lblPladsTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        this.add(lblPladsTitle, 3, 0);
+        lagerBox.getChildren().addAll(
+                lblLagerTitle,
+                createLabel("Lagernavn:"),
+                txfLagerNavn,
+                createLabel("Adresse:"),
+                txfAdresse,
+                createLabel("Lager ID:"),
+                txfKapacitet,
+                createLabel("Beskrivelse:"),
+                txaLagerBeskrivelse,
+                btnSaveLager
+        );
 
-        this.add(new Label("Vælg Lager:"), 2, 1);
+        this.add(lagerBox, 0, 1);
+
+        VBox pladsBox = createBox();
+        Label lblPladsTitle = createSectionLabel("Registrer lagerplads");
 
         cbLager = new ComboBox<>();
-        cbLager.setPrefWidth(200);
+        cbLager.setPrefWidth(240);
 
         ingenValgt = new Lager(0, "Ikke valgt", "", "");
 
         cbLager.getItems().add(ingenValgt);
         cbLager.getItems().addAll(Controller.getLagre());
-
         cbLager.getSelectionModel().select(ingenValgt);
-
-        this.add(cbLager, 3, 1);
-
         cbLager.setOnAction(e -> valgtLagerChanged());
 
-        this.add(new Label("Reol nr:"), 2, 2);
-        txfReol = new TextField();
-        this.add(txfReol, 3, 2);
+        txfReol = createTextField();
+        txfHylde = createTextField();
+        txfPlads = createTextField();
 
-        this.add(new Label("Hylde nr:"), 2, 3);
-        txfHylde = new TextField();
-        this.add(txfHylde, 3, 3);
+        txaPladsBeskrivelse = createTextArea();
 
-        this.add(new Label("Plads nr:"), 2, 4);
-        txfPlads = new TextField();
-        this.add(txfPlads, 3, 4);
-
-        this.add(new Label("Beskrivelse:"), 2, 5);
-        txaPladsBeskrivelse = new TextArea();
-        txaPladsBeskrivelse.setPrefRowCount(3);
-        this.add(txaPladsBeskrivelse, 3, 5);
-
-        Button btnOpretLagerplads = new Button("Opret lagerplads");
-        this.add(btnOpretLagerplads, 3, 6);
+        Button btnOpretLagerplads = createButton("Opret lagerplads");
         btnOpretLagerplads.setOnAction(e -> gemLagerPlads());
 
-        Label lblLagerpladser = new Label("Lagerpladser");
-        lblLagerpladser.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
-        this.add(lblLagerpladser, 4, 0);
+        pladsBox.getChildren().addAll(
+                lblPladsTitle,
+                createLabel("Vælg lager:"),
+                cbLager,
+                createLabel("Reol nr:"),
+                txfReol,
+                createLabel("Hylde nr:"),
+                txfHylde,
+                createLabel("Plads nr:"),
+                txfPlads,
+                createLabel("Beskrivelse:"),
+                txaPladsBeskrivelse,
+                btnOpretLagerplads
+        );
+
+        this.add(pladsBox, 1, 1);
+
+        VBox oversigtBox = createBox();
+        Label lblLagerpladser = createSectionLabel("Lagerpladser");
 
         lvwPladser = new ListView<>();
-        lvwPladser.setPrefWidth(250);
-        lvwPladser.setPrefHeight(250);
-        this.add(lvwPladser, 4, 1, 1, 6);
+        lvwPladser.setPrefWidth(280);
+        lvwPladser.setPrefHeight(390);
+        lvwPladser.setStyle(
+                "-fx-control-inner-background: #f5e6d0;" +
+                        "-fx-font-size: 13px;"
+        );
+
+        oversigtBox.getChildren().addAll(lblLagerpladser, lvwPladser);
+
+        this.add(oversigtBox, 2, 1);
 
         disableLagerpladsFields(true);
     }
 
-    private void gemLager() {
+    private VBox createBox() {
+        VBox box = new VBox(10);
+        box.setPadding(new Insets(20));
+        box.setAlignment(Pos.TOP_CENTER);
+        box.setStyle(
+                "-fx-background-color: #5a321b;" +
+                        "-fx-background-radius: 18;" +
+                        "-fx-border-color: #b88746;" +
+                        "-fx-border-radius: 18;" +
+                        "-fx-border-width: 1.5;"
+        );
+        return box;
+    }
 
+    private Label createSectionLabel(String text) {
+        Label label = new Label(text);
+        label.setStyle(
+                "-fx-font-size: 20px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #f3d7a3;"
+        );
+        return label;
+    }
+
+    private Label createLabel(String text) {
+        Label label = new Label(text);
+        label.setStyle(
+                "-fx-text-fill: #f3d7a3;" +
+                        "-fx-font-size: 13px;"
+        );
+        return label;
+    }
+
+    private TextField createTextField() {
+        TextField tf = new TextField();
+        tf.setPrefWidth(240);
+        tf.setStyle(
+                "-fx-background-radius: 10;" +
+                        "-fx-font-size: 13px;"
+        );
+        return tf;
+    }
+
+    private TextArea createTextArea() {
+        TextArea ta = new TextArea();
+        ta.setPrefWidth(240);
+        ta.setPrefHeight(70);
+        ta.setStyle(
+                "-fx-background-radius: 10;" +
+                        "-fx-font-size: 13px;"
+        );
+        return ta;
+    }
+
+    private Button createButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(220);
+        button.setPrefHeight(38);
+        button.setStyle(
+                "-fx-background-color: #b88746;" +
+                        "-fx-text-fill: #1f120a;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-cursor: hand;"
+        );
+        return button;
+    }
+
+    private void gemLager() {
         if (txfLagerNavn.getText().trim().isEmpty() ||
                 txfAdresse.getText().trim().isEmpty() ||
                 txfKapacitet.getText().trim().isEmpty()) {
@@ -170,7 +247,6 @@ public class LagerPane extends GridPane {
     }
 
     private void gemLagerPlads() {
-
         Lager lager = cbLager.getValue();
 
         if (lager == null || lager == ingenValgt) {
@@ -182,13 +258,9 @@ public class LagerPane extends GridPane {
             int reolNr = Integer.parseInt(txfReol.getText().trim());
             int hyldeNr = Integer.parseInt(txfHylde.getText().trim());
             int pladsNr = Integer.parseInt(txfPlads.getText().trim());
-
             String beskrivelse = txaPladsBeskrivelse.getText().trim();
-
             lager.createLagerPlads(reolNr, hyldeNr, pladsNr, beskrivelse);
-
             lvwPladser.getItems().setAll(lager.getLagerPladser());
-
             txfReol.clear();
             txfHylde.clear();
             txfPlads.clear();
@@ -202,7 +274,6 @@ public class LagerPane extends GridPane {
     }
 
     private void valgtLagerChanged() {
-
         Lager valgt = cbLager.getValue();
 
         if (valgt == null || valgt == ingenValgt) {
@@ -212,7 +283,6 @@ public class LagerPane extends GridPane {
         }
 
         disableLagerpladsFields(false);
-
         lvwPladser.getItems().setAll(valgt.getLagerPladser());
     }
 

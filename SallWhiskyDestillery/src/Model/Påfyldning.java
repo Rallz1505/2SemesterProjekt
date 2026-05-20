@@ -1,8 +1,9 @@
 package Model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Påfyldning {
+public class Påfyldning implements Serializable {
 
     private LocalDate dato;
     private String ansvarlig;
@@ -38,25 +39,14 @@ public class Påfyldning {
         return dato;
     }
 
-    public void setDato(LocalDate dato) {
-        this.dato = dato;
-    }
-
     public String getAnsvarlig() {
         return ansvarlig;
-    }
-
-    public void setAnsvarlig(String ansvarlig) {
-        this.ansvarlig = ansvarlig;
     }
 
     public VæskeMængde getVæskeMængde() {
         return væskeMængde;
     }
 
-    public void setVæskeMængde(VæskeMængde væskeMængde) {
-        this.væskeMængde = væskeMængde;
-    }
 
     public Fad getFad() {
         return fad;

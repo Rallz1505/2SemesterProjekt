@@ -11,6 +11,8 @@ import java.time.LocalDate;
 
 public class App {
 
+    //Brugt AI til at gøre det pænt så det var lidt mere behageligt at kigge på :), men ikk ebrugt det til andet.
+
     public static void main(String[] args) {
 
         Storage storage = loadStorage();
@@ -33,7 +35,6 @@ public class App {
 
     public static void initStorage() {
 
-        // Leverandører
         Leverandør l1 = Controller.createLeverandør(
                 1,
                 "Spanish Casks",
@@ -54,7 +55,6 @@ public class App {
                 "Bourbon fade"
         );
 
-        // Lagre
         Lager lager1 = Controller.createLager(
                 1,
                 "Container Lager",
@@ -69,14 +69,12 @@ public class App {
                 "Ekstra lager"
         );
 
-        // Lagerpladser
         LagerPlads lp1 = lager1.createLagerPlads(1, 1, 1, "Tæt ved døren");
         LagerPlads lp2 = lager1.createLagerPlads(1, 1, 2, "");
 
         LagerPlads lp3 = lager2.createLagerPlads(2, 1, 1, "Koldt område");
         LagerPlads lp4 = lager2.createLagerPlads(2, 1, 2, "");
 
-        // Fade
         Fad fad1 = Controller.createFad(
                 100,
                 1,
@@ -104,7 +102,6 @@ public class App {
                 lp3
         );
 
-        // Destilleringer
         Destillering d1 = Controller.createDestillering(
                 LocalDate.of(2021, 1, 10),
                 LocalDate.of(2021, 1, 15),
@@ -127,7 +124,6 @@ public class App {
                 "Anden batch"
         );
 
-        // Påfyldninger
         Controller.createPåfyldning(
                 LocalDate.of(2021, 2, 1),
                 "Anders",

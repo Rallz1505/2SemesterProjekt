@@ -2,21 +2,22 @@ package GUI;
 
 import Controller.Controller;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
 
 public class RegistreDES extends GridPane {
 
+    //Brugt AI til at gøre det pænt så det var lidt mere behageligt at kigge på :), men ikk ebrugt det til andet.
+
     private DatePicker dpStartdato, dpSlutdato;
-
-    private TextField txfMaltBatch, txfKornsort,
-            txfMaengde, txfAlkohol, txfRygemateriale;
-
+    private TextField txfMaltBatch, txfKornsort, txfMaengde, txfAlkohol, txfRygemateriale;
     private TextArea txaKommentar;
 
     public void open() {
@@ -25,61 +26,152 @@ public class RegistreDES extends GridPane {
 
         initContent();
 
-        Scene scene = new Scene(this, 450, 500);
+        Scene scene = new Scene(this, 650, 640);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
     }
 
     private void initContent() {
-        this.setPadding(new Insets(20));
-        this.setHgap(10);
-        this.setVgap(12);
+        this.setPadding(new Insets(30));
+        this.setHgap(25);
+        this.setVgap(15);
+        this.setAlignment(Pos.CENTER);
 
-        ColumnConstraints col1 = new ColumnConstraints();
-        col1.setPercentWidth(30);
+        this.setStyle("-fx-background-color: linear-gradient(to bottom, #3b2415, #1f120a);");
 
-        ColumnConstraints col2 = new ColumnConstraints();
-        col2.setPercentWidth(70);
+        ColumnConstraints c1 = new ColumnConstraints();
+        c1.setMinWidth(560);
+        this.getColumnConstraints().add(c1);
 
-        this.getColumnConstraints().addAll(col1, col2);
+        Label lblTitle = new Label("Registrer destillering");
+        lblTitle.setStyle(
+                "-fx-font-size: 28px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #f3d7a3;"
+        );
+        this.add(lblTitle, 0, 0);
 
-        this.add(new Label("Startdato:"), 0, 0);
+        VBox formBox = createBox();
+
+        Label lblFormTitle = createSectionLabel("Ny destillering");
+
         dpStartdato = new DatePicker();
-        this.add(dpStartdato, 1, 0);
+        dpStartdato.setPrefWidth(300);
 
-        this.add(new Label("Slutdato:"), 0, 1);
         dpSlutdato = new DatePicker();
-        this.add(dpSlutdato, 1, 1);
+        dpSlutdato.setPrefWidth(300);
 
-        this.add(new Label("Malt batch:"), 0, 2);
-        txfMaltBatch = new TextField();
-        this.add(txfMaltBatch, 1, 2);
+        txfMaltBatch = createTextField();
+        txfKornsort = createTextField();
+        txfMaengde = createTextField();
+        txfAlkohol = createTextField();
+        txfRygemateriale = createTextField();
 
-        this.add(new Label("Kornsort:"), 0, 3);
-        txfKornsort = new TextField();
-        this.add(txfKornsort, 1, 3);
+        txaKommentar = createTextArea();
 
-        this.add(new Label("Mængde (liter):"), 0, 4);
-        txfMaengde = new TextField();
-        this.add(txfMaengde, 1, 4);
-
-        this.add(new Label("Alkohol %:"), 0, 5);
-        txfAlkohol = new TextField();
-        this.add(txfAlkohol, 1, 5);
-
-        this.add(new Label("Rygemateriale:"), 0, 6);
-        txfRygemateriale = new TextField();
-        this.add(txfRygemateriale, 1, 6);
-
-        this.add(new Label("Kommentar:"), 0, 7);
-        txaKommentar = new TextArea();
-        txaKommentar.setPrefRowCount(4);
-        this.add(txaKommentar, 1, 7);
-
-        Button btnSave = new Button("Gem destillering");
-        this.add(btnSave, 1, 8);
+        Button btnSave = createButton("Gem destillering");
         btnSave.setOnAction(e -> gemDestillering());
+
+        formBox.getChildren().addAll(
+                lblFormTitle,
+
+                createLabel("Startdato:"),
+                dpStartdato,
+
+                createLabel("Slutdato:"),
+                dpSlutdato,
+
+                createLabel("Malt batch:"),
+                txfMaltBatch,
+
+                createLabel("Kornsort:"),
+                txfKornsort,
+
+                createLabel("Mængde (liter):"),
+                txfMaengde,
+
+                createLabel("Alkohol %:"),
+                txfAlkohol,
+
+                createLabel("Rygemateriale:"),
+                txfRygemateriale,
+
+                createLabel("Kommentar:"),
+                txaKommentar,
+
+                btnSave
+        );
+
+        this.add(formBox, 0, 1);
+    }
+
+    private VBox createBox() {
+        VBox box = new VBox(9);
+        box.setPadding(new Insets(20));
+        box.setAlignment(Pos.TOP_CENTER);
+        box.setStyle(
+                "-fx-background-color: #5a321b;" +
+                        "-fx-background-radius: 18;" +
+                        "-fx-border-color: #b88746;" +
+                        "-fx-border-radius: 18;" +
+                        "-fx-border-width: 1.5;"
+        );
+        return box;
+    }
+
+    private Label createSectionLabel(String text) {
+        Label label = new Label(text);
+        label.setStyle(
+                "-fx-font-size: 20px;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #f3d7a3;"
+        );
+        return label;
+    }
+
+    private Label createLabel(String text) {
+        Label label = new Label(text);
+        label.setStyle(
+                "-fx-text-fill: #f3d7a3;" +
+                        "-fx-font-size: 13px;"
+        );
+        return label;
+    }
+
+    private TextField createTextField() {
+        TextField tf = new TextField();
+        tf.setPrefWidth(300);
+        tf.setStyle(
+                "-fx-background-radius: 10;" +
+                        "-fx-font-size: 13px;"
+        );
+        return tf;
+    }
+
+    private TextArea createTextArea() {
+        TextArea ta = new TextArea();
+        ta.setPrefWidth(300);
+        ta.setPrefHeight(75);
+        ta.setStyle(
+                "-fx-background-radius: 10;" +
+                        "-fx-font-size: 13px;"
+        );
+        return ta;
+    }
+
+    private Button createButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(220);
+        button.setPrefHeight(38);
+        button.setStyle(
+                "-fx-background-color: #b88746;" +
+                        "-fx-text-fill: #1f120a;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-cursor: hand;"
+        );
+        return button;
     }
 
     private void gemDestillering() {
@@ -105,16 +197,7 @@ public class RegistreDES extends GridPane {
             String rygemateriale = txfRygemateriale.getText().trim();
             String kommentar = txaKommentar.getText().trim();
 
-            Controller.createDestillering(
-                    startdato,
-                    slutdato,
-                    maltBatch,
-                    kornsort,
-                    maengde,
-                    alkohol,
-                    rygemateriale,
-                    kommentar
-            );
+            Controller.createDestillering(startdato, slutdato, maltBatch, kornsort, maengde, alkohol, rygemateriale, kommentar);
 
             visAlert("Destillering oprettet.");
 

@@ -1,8 +1,9 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Lager {
+public class Lager implements Serializable {
 
     private int id;
     private String navn;
@@ -24,10 +25,6 @@ public class Lager {
         return lagerPlads;
     }
 
-    public void removeLagerPlads(LagerPlads lagerPlads) {
-        lagerPladser.remove(lagerPlads);
-    }
-
     public ArrayList<LagerPlads> getLagerPladser() {
         return new ArrayList<>(lagerPladser);
     }
@@ -45,62 +42,9 @@ public class Lager {
         return ledigePladser;
     }
 
-    public LagerPlads findLagerPlads(int reolNr, int hyldeNr, int pladsNr){
-
-        LagerPlads lagerPlads = null;
-
-        for (LagerPlads l : lagerPladser){
-            if (l.getReolNr() == reolNr && l.getHyldeNr() == hyldeNr && l.getPladsNr() == pladsNr){
-                lagerPlads = l;
-            }
-        }
-        return lagerPlads;
-    }
-
-    public ArrayList<LagerPlads> getOptagedePladser(){
-
-        ArrayList<LagerPlads> optagedePladser = new ArrayList<>();
-
-        for (LagerPlads l : lagerPladser){
-            if (!l.erLedig()){
-                optagedePladser.add(l);
-            }
-        }
-
-        return optagedePladser;
-    }
-
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNavn() {
-        return navn;
-    }
-
-    public void setNavn(String navn) {
-        this.navn = navn;
-    }
-
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
-    public String getBeskrivelse() {
-        return beskrivelse;
-    }
-
-    public void setBeskrivelse(String beskrivelse) {
-        this.beskrivelse = beskrivelse;
     }
 
     @Override

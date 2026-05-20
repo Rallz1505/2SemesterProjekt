@@ -104,7 +104,7 @@ class ControllerTest {
         );
 
         WhiskyMængde whiskyMængde = Controller.createWhiskyMængde(
-                whiskyProdukt, påfyldning, 20.0
+                whiskyProdukt, fad, 20.0
         );
 
         assertNotNull(whiskyMængde);
@@ -134,7 +134,7 @@ class ControllerTest {
         );
 
         assertThrows(IllegalArgumentException.class, () ->
-                Controller.createWhiskyMængde(whiskyProdukt, påfyldning, 40.0)
+                Controller.createWhiskyMængde(whiskyProdukt, fad, 40.0)
         );
     }
 
@@ -159,11 +159,11 @@ class ControllerTest {
         );
 
         assertThrows(IllegalArgumentException.class, () ->
-                Controller.createWhiskyMængde(whiskyProdukt, påfyldning, 0.0)
+                Controller.createWhiskyMængde(whiskyProdukt, fad, 0.0)
         );
 
         assertThrows(IllegalArgumentException.class, () ->
-                Controller.createWhiskyMængde(whiskyProdukt, påfyldning, -5.0)
+                Controller.createWhiskyMængde(whiskyProdukt, fad, -5.0)
         );
     }
 

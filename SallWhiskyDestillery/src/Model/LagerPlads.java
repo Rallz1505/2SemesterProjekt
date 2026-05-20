@@ -1,6 +1,8 @@
 package Model;
 
-public class LagerPlads {
+import java.io.Serializable;
+
+public class LagerPlads implements Serializable {
 
     private int reolNr;
     private int hyldeNr;
@@ -22,9 +24,15 @@ public class LagerPlads {
         }
     }
 
-    public void fjernFad(){
-        if (fad != null){
+    public void fjernFad() {
+
+        if (fad != null) {
+
+            Fad tempFad = fad;
+
             fad = null;
+
+            tempFad.setLagerPlads(null);
         }
     }
 
@@ -53,37 +61,7 @@ public class LagerPlads {
         this.fad = fad;
     }
 
-    public int getReolNr() {
-        return reolNr;
-    }
 
-    public void setReolNr(int reolNr) {
-        this.reolNr = reolNr;
-    }
-
-    public int getHyldeNr() {
-        return hyldeNr;
-    }
-
-    public void setHyldeNr(int hyldeNr) {
-        this.hyldeNr = hyldeNr;
-    }
-
-    public int getPladsNr() {
-        return pladsNr;
-    }
-
-    public void setPladsNr(int pladsNr) {
-        this.pladsNr = pladsNr;
-    }
-
-    public String getBeskrivelse() {
-        return beskrivelse;
-    }
-
-    public void setBeskrivelse(String beskrivelse) {
-        this.beskrivelse = beskrivelse;
-    }
 
     @Override
     public String toString() {

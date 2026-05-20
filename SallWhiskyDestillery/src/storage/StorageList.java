@@ -96,15 +96,6 @@ public class StorageList implements Storage, Serializable {
 
     // -------------------------------------------------------------------------
 
-    public void saveStorage(String fileName) {
-        try (ObjectOutputStream out =
-                     new ObjectOutputStream(new FileOutputStream(fileName))) {
-            out.writeObject(this);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static StorageList loadStorage(String fileName) {
         try (ObjectInputStream in =
                      new ObjectInputStream(new FileInputStream(fileName))) {
@@ -112,6 +103,24 @@ public class StorageList implements Storage, Serializable {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return new StorageList();
+        }
+    }
+
+    public static void saveStorage(Storage storage) {
+
+        String fileName = "storage.ser";
+
+        try (
+                FileOutputStream fileOut = new FileOutputStream(fileName);
+                ObjectOutputStream objOut = new ObjectOutputStream(fileOut)
+        ) {
+
+            objOut.writeObject(storage);
+
+            System.out.println("Storage gemt.");
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

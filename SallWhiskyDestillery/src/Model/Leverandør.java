@@ -1,8 +1,9 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Leverandør {
+public class Leverandør implements Serializable {
 
     private int id;
     private String navn;
@@ -37,10 +38,6 @@ public class Leverandør {
             fade.remove(fad);
             fad.setLeverandør(null);
         }
-    }
-
-    public int antalFade(){
-        return fade.size();
     }
 
     public ArrayList<Fad> getFade() {

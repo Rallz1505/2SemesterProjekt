@@ -1,52 +1,29 @@
 package Model;
 
-public class WhiskyMængde {
+import java.io.Serializable;
 
-    private Påfyldning påfyldning;
+public class WhiskyMængde implements Serializable {
+
+    private Fad fad;
     private double mængde;
     private WhiskyProdukt whiskyProdukt;
 
-
-    public WhiskyMængde(Påfyldning påfyldning, double mængde, WhiskyProdukt whiskyProdukt) {
-        this.påfyldning = påfyldning;
+    public WhiskyMængde(Fad fad, double mængde, WhiskyProdukt whiskyProdukt) {
+        this.fad = fad;
         this.mængde = mængde;
         this.whiskyProdukt = whiskyProdukt;
     }
 
-    public Påfyldning getPåfyldning() {
-        return påfyldning;
-    }
-
-    public Destillering getDestillering(){
-        return påfyldning.getVæskeMængde().getDestilat();
-    }
-
-    public Fad getFad(){
-        return påfyldning.getFad();
-    }
-
-    public void setPåfyldning(Påfyldning påfyldning) {
-        this.påfyldning = påfyldning;
+    public Fad getFad() {
+        return fad;
     }
 
     public double getMængde() {
         return mængde;
     }
 
-    public void setMængde(double mængde) {
-        this.mængde = mængde;
-    }
-
-    public WhiskyProdukt getWhiskyProdukt() {
-        return whiskyProdukt;
-    }
-
-    public void setWhiskyProdukt(WhiskyProdukt whiskyProdukt) {
-        this.whiskyProdukt = whiskyProdukt;
-    }
-
     @Override
     public String toString() {
-        return mængde + " L fra fad " + getFad().getId();
+        return mængde + " L fra fad " + fad.getId();
     }
 }

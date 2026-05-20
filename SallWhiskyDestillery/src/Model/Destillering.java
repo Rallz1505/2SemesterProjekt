@@ -1,9 +1,10 @@
 package Model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class Destillering {
+public class Destillering implements Serializable {
 
     private LocalDate startDato;
     private LocalDate slutDato;
@@ -27,7 +28,6 @@ public class Destillering {
 
     }
 
-
     public int getMaltBatch() {
         return maltBatch;
     }
@@ -50,14 +50,6 @@ public class Destillering {
 
     public String getKornSort() {
         return kornSort;
-    }
-
-    public LocalDate getSlutDato() {
-        return slutDato;
-    }
-
-    public LocalDate getStartDato() {
-        return startDato;
     }
 
     @Override
